@@ -97,6 +97,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         textoPorcentajeMod.addTextChangedListener(textWatcher);
         textoGanancia = findViewById(R.id.textoGanancia);
         textoPrecio = findViewById(R.id.textoPrecio);
+        textoPrecio.setOnTouchListener(onTouchListener);
         textoPrecioMod = findViewById(R.id.textoPrecioMod);
         textoPrecioMod.addTextChangedListener(textWatcher);
         textoInvertido = findViewById(R.id.textoInvertido);
@@ -108,6 +109,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         textoGananciaLetra = findViewById(R.id.textoGanadoLetra);
         textoBase = findViewById(R.id.textoBase);
         textoBase.setText(String.format(precisionOrigen, precio) + " " + monedaOrigenNombre);
+        textoBase.setOnTouchListener(onTouchListener);
         textoLiquidez = findViewById(R.id.textoLiquidez);
         textoLiquidez.setText("0.00 " + monedaLiquidezNombre);
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -402,6 +404,24 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                         break;
                     }
 
+                    case R.id.textoPrecio: {
+                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("Precio", textoPrecio.getText().toString());
+                        clipboard.setPrimaryClip(clip);
+                        Toast.makeText(getApplicationContext(), "Precio grabado: " + textoPrecio.getText().toString(), Toast.LENGTH_SHORT).show();
+                        vibrator.vibrate(500);
+                        break;
+                    }
+
+                    case R.id.textoBase: {
+                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("Precio", textoBase.getText().toString());
+                        clipboard.setPrimaryClip(clip);
+                        Toast.makeText(getApplicationContext(), "Precio grabado: " + textoBase.getText().toString(), Toast.LENGTH_SHORT).show();
+                        vibrator.vibrate(500);
+                        break;
+                    }
+
                     case R.id.botonCerrar: {
 
                         Intent data = new Intent();
@@ -468,8 +488,12 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                             botonPorcentajeCalculadorMenos.setBackgroundResource(R.drawable.fondo_botones);
                             textoPorcentajeMod.setText("");
                             textoPrecio.setText("Precio");
-                            textoInvertidoActual.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
                             textoLiquidez.setText("0.00 " + monedaLiquidezNombre);
+                            if (modoComprar)
+
+                                textoInvertidoActual.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
+                            else
+                                textoInvertidoActual.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
                             positivo = true;
                         }
 
@@ -485,10 +509,13 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                             botonPorcentajeCalculadorMenos.setBackgroundResource(R.drawable.fondo_botones_presionado);
                             textoPorcentajeMod.setText("");
                             textoPrecio.setText("Precio");
-                            textoInvertidoActual.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
                             textoLiquidez.setText("0.00 " + monedaLiquidezNombre);
+                            if (modoComprar)
+
+                                textoInvertidoActual.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
+                            else
+                                textoInvertidoActual.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
                             positivo = false;
-                            
                         }
 
                         break;
