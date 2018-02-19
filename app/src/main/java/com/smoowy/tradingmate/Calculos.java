@@ -488,6 +488,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                             textoInvertidoActual.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
                             textoLiquidez.setText("0.00 " + monedaLiquidezNombre);
                             positivo = false;
+                            
                         }
 
                         break;

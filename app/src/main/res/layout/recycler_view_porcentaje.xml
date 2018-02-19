@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="280dp"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true">
+
+    <ImageView
+        android:id="@+id/fondo"
+        android:layout_width="match_parent"
+        android:layout_height="800dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="10dp"
+        android:background="@drawable/fondo_marcador_neutral" />
+
+    <TextView
+        android:id="@+id/textoPorcentaje"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="12dp"
+        android:shadowColor="#000000"
+        android:shadowDx="7"
+        android:shadowDy="1"
+        android:shadowRadius="10"
+        android:text="+ 10.25%"
+        android:textColor="@android:color/white"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="15dp"
+        android:text="Precio"
+        android:textColor="@android:color/white"
+        android:textSize="17dp" />
+
+    <TextView
+        android:id="@+id/textoPrecioMod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="40dp"
+        android:maxLines="1"
+        android:shadowColor="#000000"
+        android:shadowDx="7"
+        android:shadowDy="1"
+        android:shadowRadius="10"
+        android:text=" 0.00075877"
+        android:textColor="@android:color/white"
+        android:textSize="35dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textoPrecioMod"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="7dp"
+        android:text="Precio Base"
+        android:textColor="@android:color/white"
+        android:textSize="17dp" />
+
+    <TextView
+        android:id="@+id/textoBase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textoPrecioMod"
+        android:layout_marginLeft="140dp"
+        android:layout_marginTop="5dp"
+        android:shadowColor="#000000"
+        android:shadowDx="7"
+        android:shadowDy="1"
+        android:shadowRadius="10"
+        android:text="0.01024587 BTC"
+        android:textColor="@android:color/white"
+        android:textSize="20dp" />
+
+
+    <TextView
+        android:id="@+id/textoInvertidoLetra"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textoPrecioMod"
+        android:layout_below="@+id/textoPrecioMod"
+        android:layout_marginTop="36dp"
+        android:text="Ref/Inv"
+        android:textColor="@android:color/white"
+        android:textSize="17dp" />
+
+    <TextView
+        android:id="@+id/textoInvertidoRV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textoPrecioMod"
+        android:layout_marginLeft="140dp"
+        android:layout_marginTop="35dp"
+        android:shadowColor="#000000"
+        android:shadowDx="7"
+        android:shadowDy="1"
+        android:shadowRadius="10"
+        android:text="47 Ripples"
+        android:textColor="@android:color/white"
+        android:textSize="20dp" />
+
+    <TextView
+        android:id="@+id/textoGanadoLetraRV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textoPrecioMod"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="65dp"
+        android:text="Ganado"
+        android:textColor="@android:color/white"
+        android:textSize="17dp" />
+
+    <TextView
+        android:id="@+id/textoGanancia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textoPrecioMod"
+        android:layout_marginLeft="129dp"
+        android:layout_marginTop="65dp"
+        android:shadowColor="#000000"
+        android:shadowDx="7"
+        android:shadowDy="1"
+        android:shadowRadius="10"
+        android:text="+ 23 Ripples"
+        android:textColor="@android:color/white"
+        android:textSize="20dp" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textoPrecioMod"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="93dp"
+        android:text="Actual"
+        android:textColor="@android:color/white"
+        android:textSize="17dp" />
+
+    <TextView
+        android:id="@+id/textoActualRV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textoPrecioMod"
+        android:layout_marginLeft="140dp"
+        android:layout_marginTop="93dp"
+        android:shadowColor="#000000"
+        android:shadowDx="7"
+        android:shadowDy="1"
+        android:shadowRadius="10"
+        android:text="47 Ripples"
+        android:textColor="@android:color/white"
+        android:textSize="20dp"
+        android:textStyle="bold"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textoPrecioMod"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="125dp"
+        android:text="Usando"
+        android:textColor="@android:color/white"
+        android:textSize="17dp" />
+
+    <TextView
+        android:id="@+id/textoUsandoRV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textoPrecioMod"
+        android:layout_marginLeft="140dp"
+        android:layout_marginTop="123dp"
+        android:shadowColor="#000000"
+        android:shadowDx="7"
+        android:shadowDy="1"
+        android:shadowRadius="10"
+        android:text="0.01024587 BTC"
+        android:textColor="@android:color/white"
+        android:textSize="20dp" />
+
+    <TextView
+        android:id="@+id/textoLiquidezLetra"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textoPrecioMod"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="153dp"
+        android:text="Ref/Liq"
+        android:textColor="@android:color/white"
+        android:textSize="17dp" />
+
+    <TextView
+        android:id="@+id/textoLiquidez"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textoPrecioMod"
+        android:layout_marginLeft="140dp"
+        android:layout_marginTop="153dp"
+        android:shadowColor="#000000"
+        android:shadowDx="7"
+        android:shadowDy="1"
+        android:shadowRadius="10"
+        android:text="0.01024587 BTC"
+        android:textColor="@android:color/white"
+        android:textSize="20dp" />
+
+
+</RelativeLayout>

@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondoPrincipal"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.smoowy.tradingmate.MainActivity"
+    tools:showIn="@layout/app_bar_main">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="20dp"
+        android:text="Origen"
+        android:textColor="@android:color/white"
+        android:textSize="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <EditText
+        android:id="@+id/precisionOrigen"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/fondo_botones"
+        android:hint="P"
+        android:inputType="number"
+        android:maxLength="1"
+        android:selectAllOnFocus="true"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <EditText
+        android:textStyle="bold"
+        android:id="@+id/origen"
+        android:layout_width="142dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/fondo_botones"
+        android:hint="Origen"
+        android:inputType="textCapCharacters"
+        android:lines="1"
+        android:selectAllOnFocus="true"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
+        android:textSize="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="190dp"
+        android:layout_marginTop="20dp"
+        android:text="Destino"
+        android:textColor="@android:color/white"
+        android:textSize="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/precisionDestino"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="292dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/fondo_botones"
+        android:hint="P"
+        android:inputType="number"
+        android:maxLength="1"
+        android:selectAllOnFocus="true"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:textStyle="bold"
+        android:id="@+id/destino"
+        android:layout_width="142dp"
+        android:layout_height="54dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/fondo_botones"
+        android:hint="Destino"
+        android:inputType="textCapCharacters"
+        android:lines="1"
+        android:selectAllOnFocus="true"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
+        android:textSize="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="100dp"
+        android:text="Precio"
+        android:textColor="@android:color/white"
+        android:textSize="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/precisionPrecio"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="270dp"
+        android:layout_marginTop="130dp"
+        android:background="@drawable/fondo_botones"
+        android:hint="P"
+        android:inputType="number"
+        android:maxLength="1"
+        android:selectAllOnFocus="true"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.44"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/precio"
+        android:layout_width="240dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="125dp"
+        android:background="@drawable/fondo_botones"
+        android:hint="Precio"
+        android:inputType="numberDecimal"
+        android:lines="1"
+        android:selectAllOnFocus="true"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.31"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="180dp"
+        android:text="Inversion"
+        android:textColor="@android:color/white"
+        android:textSize="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/precisionInversion"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="270dp"
+        android:layout_marginTop="210dp"
+        android:background="@drawable/fondo_botones"
+        android:hint="P"
+        android:inputType="number"
+        android:maxLength="1"
+        android:selectAllOnFocus="true"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.44"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <EditText
+        android:id="@+id/invertido"
+        android:layout_width="240dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="205dp"
+        android:background="@drawable/fondo_botones"
+        android:hint="Inversion"
+        android:inputType="numberDecimal"
+        android:lines="1"
+        android:selectAllOnFocus="true"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.31"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="262dp"
+        android:text="Comision %"
+        android:textColor="@android:color/white"
+        android:textSize="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/comision"
+        android:layout_width="218dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="290dp"
+        android:background="@drawable/fondo_botones"
+        android:hint="Comision"
+        android:inputType="numberDecimal"
+        android:lines="1"
+        android:selectAllOnFocus="true"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <Button
+        android:id="@+id/botonComprar"
+        android:layout_width="142dp"
+        android:layout_height="54dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginTop="364dp"
+        android:background="@drawable/fondo_botones"
+        android:text="Comprar"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <Button
+        android:id="@+id/botonCazar"
+        android:layout_width="142dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="364dp"
+        android:background="@drawable/fondo_botones"
+        android:text="Cazar"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <Button
+        android:id="@+id/botonPorcentajesM"
+        android:layout_width="142dp"
+        android:layout_height="54dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="448dp"
+        android:background="@drawable/fondo_botones"
+        android:text="Porcentaje"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.13"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <Button
+        android:id="@+id/botonEmpezar"
+        android:layout_width="142dp"
+        android:layout_height="54dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="448dp"
+        android:background="@drawable/fondo_botones"
+        android:text="Empezar"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</android.support.constraint.ConstraintLayout>
