@@ -36,13 +36,15 @@ public class Calculos extends AppCompatActivity implements Comunicador {
     EditText textoPrecioMod, textoPorcentajeMod;
     double invertido, precio, comision, invertidoDestino, precioFinal,
             precioIngresado, porcentajeFinal, gananciaFinal, invertidoActual, porcentajeIngresado,
-            liquidez, referenciaLiquidezOrigen, referenciaLiquidezDestino;
-    boolean modoComprar, botonPorcentajesAplanado, botonPrecisionAplanado,
+            liquidez, referenciaLiquidezOrigen, referenciaLiquidezDestino,comisionEntrada,comisionSalida,invertidoFinal;
+    int ajustadorPorcentajes;
+    boolean modoComprar, botonPorcentajesAplanado,
             botonModoComprar, botonporcentajeCalculadorAplanado, botonPorcentajeCalculadorMasAplanado;
     Vibrator vibrator;
     String precisionOrigen, precisionDestino, precisionPrecio, precisionInversion, precisionLiquidez,
             precisionOrigenNumero, precisionDestinoNumero, precisionPrecioNumero, precisionInversionNumero;
     RelativeLayout calculador;
+    boolean hayComisionEntrada,hayComisionSalida;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,6 +58,10 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         invertido = getIntent().getExtras().getDouble("invertido");
         precio = getIntent().getExtras().getDouble("precio");
         comision = (getIntent().getExtras().getDouble("comision")) / 100;
+        comisionEntrada = .04;
+        comisionSalida = .04;
+        hayComisionEntrada = true;
+        hayComisionSalida = true;
         modoComprar = getIntent().getExtras().getBoolean("modoComprar");
         botonModoComprar = modoComprar;
         botonPorcentajesAplanado = getIntent().getExtras().getBoolean("botonPorcentajesAplanado");
@@ -73,7 +79,8 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         referenciaLiquidezDestino = 10455;
         precisionLiquidez = "%.2f";
 
-        invertidoDestino = invertido / precio;
+        invertidoFinal = invertido * (1 - comisionEntrada);
+        invertidoDestino = (invertido / precio) * (1 - comisionEntrada);
         setRecyclerViewRecyclerBotonesPorcentajes();
         setRecyclerViewRecyclerPorcentajes();
         botonComprar = findViewById(R.id.botonComprar);
@@ -112,6 +119,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         textoBase.setOnTouchListener(onTouchListener);
         textoLiquidez = findViewById(R.id.textoLiquidez);
         textoLiquidez.setText("0.00 " + monedaLiquidezNombre);
+        textoLiquidez.setOnTouchListener(onTouchListener);
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         if (botonModoComprar)
@@ -266,14 +274,16 @@ public class Calculos extends AppCompatActivity implements Comunicador {
 
             double a, b;
 
-            a = invertido * (1 - comision);
-            a /= precio;
+            a = invertido * (1 + porcentajeIngresado);
+            a *= (1 + comisionSalida);
+            a += (invertido * comisionEntrada);
 
-            b = invertido * (1 + porcentajeIngresado);
-            b *= (1 + comision);
-            b += (invertido * comision);
+            b = invertidoFinal;
+            b /= precio;
 
-            precioFinal = b / a;
+
+
+            precioFinal = a / b;
             gananciaFinal = invertido * porcentajeIngresado;
             invertidoActual = invertido * (1 + porcentajeIngresado);
             porcentajeIngresado *= 100;
@@ -281,19 +291,20 @@ public class Calculos extends AppCompatActivity implements Comunicador {
 
         } else {
 
-            double b = invertidoDestino * (1 - comision);
-            b *= precioIngresado;
-            b -= invertido * comision;
-            b /= (1 + comision);
+            double a = invertidoDestino;
+            a *= precioIngresado;
+            a -= invertido * comisionSalida;
+            a /= 1 + comisionEntrada;
 
-            gananciaFinal = b - invertido;
-
-            porcentajeFinal = b / invertido;
+            gananciaFinal = a - invertido;
+            porcentajeFinal = a / invertido;
             porcentajeFinal -= 1;
+            invertidoActual = invertido * (1 + (porcentajeFinal));
             porcentajeFinal *= 100;
 
+
             positivo = gananciaFinal > 0;
-            invertidoActual = invertido * (1 + (porcentajeFinal / 100));
+
 
 
         }
@@ -315,16 +326,16 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                 porcentajeFinal *= -1;
             }
 
-            gananciaFinal = invertidoDestino * porcentajeFinal;
+            gananciaFinal = (invertidoFinal / precioIngresado) * porcentajeFinal;
 
-            invertidoActual = invertidoDestino * (1 + porcentajeFinal);
+            invertidoActual = (invertidoFinal / precioIngresado);
 
         } else {
             porcentajeFinal = precioIngresado / precio;
             porcentajeFinal -= 1;
             porcentajeFinal *= -1;
-            gananciaFinal = invertidoDestino * porcentajeFinal;
-            invertidoActual = invertidoDestino * (1 + (porcentajeFinal));
+            gananciaFinal = (invertidoFinal / precioIngresado) * porcentajeFinal;
+            invertidoActual = (invertidoFinal / precioIngresado);
             porcentajeFinal *= 100;
         }
 
@@ -348,6 +359,9 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                         else {
 
                             setBotonComprar();
+                            if (botonPorcentajesAplanado) {
+                                ajustadorPosicion(ajustadorPorcentajes);
+                            }
 
                             break;
                         }
@@ -358,6 +372,10 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                             break;
                         else {
                             setBotonCazar();
+
+                            if (botonPorcentajesAplanado) {
+                                ajustadorPosicion(ajustadorPorcentajes);
+                            }
                         }
 
                         break;
@@ -378,47 +396,32 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                     }
 
                     case R.id.textoInvertido: {
-                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                        ClipData clip = ClipData.newPlainText("Precio", textoInvertido.getText().toString());
-                        clipboard.setPrimaryClip(clip);
-                        Toast.makeText(getApplicationContext(), "Precio grabado: " + textoInvertido.getText().toString(), Toast.LENGTH_SHORT).show();
-                        vibrator.vibrate(500);
+                        exportarPrecio(textoInvertido);
                         break;
                     }
 
                     case R.id.textoInvertidoActual: {
-                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                        ClipData clip = ClipData.newPlainText("Precio", textoInvertidoActual.getText().toString());
-                        clipboard.setPrimaryClip(clip);
-                        Toast.makeText(getApplicationContext(), "Precio grabado: " + textoInvertidoActual.getText().toString(), Toast.LENGTH_SHORT).show();
-                        vibrator.vibrate(500);
+                        exportarPrecio(textoInvertidoActual);
                         break;
                     }
 
                     case R.id.textoUsado: {
-                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                        ClipData clip = ClipData.newPlainText("Precio", textoUsado.getText().toString());
-                        clipboard.setPrimaryClip(clip);
-                        Toast.makeText(getApplicationContext(), "Precio grabado: " + textoUsado.getText().toString(), Toast.LENGTH_SHORT).show();
-                        vibrator.vibrate(500);
+                        exportarPrecio(textoUsado);
                         break;
                     }
 
                     case R.id.textoPrecio: {
-                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                        ClipData clip = ClipData.newPlainText("Precio", textoPrecio.getText().toString());
-                        clipboard.setPrimaryClip(clip);
-                        Toast.makeText(getApplicationContext(), "Precio grabado: " + textoPrecio.getText().toString(), Toast.LENGTH_SHORT).show();
-                        vibrator.vibrate(500);
+                        exportarPrecio(textoPrecio);
                         break;
                     }
 
                     case R.id.textoBase: {
-                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                        ClipData clip = ClipData.newPlainText("Precio", textoBase.getText().toString());
-                        clipboard.setPrimaryClip(clip);
-                        Toast.makeText(getApplicationContext(), "Precio grabado: " + textoBase.getText().toString(), Toast.LENGTH_SHORT).show();
-                        vibrator.vibrate(500);
+                        exportarPrecio(textoBase);
+                        break;
+                    }
+
+                    case R.id.textoLiquidez: {
+                        exportarPrecio(textoLiquidez);
                         break;
                     }
 
@@ -527,6 +530,14 @@ public class Calculos extends AppCompatActivity implements Comunicador {
             return true;
         }
     };
+
+    private void exportarPrecio(TextView text) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Precio", text.getText().toString());
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(getApplicationContext(), "Precio grabado: " + text.getText().toString(), Toast.LENGTH_SHORT).show();
+        vibrator.vibrate(500);
+    }
 
     private void limpiarCalculador() {
 
@@ -670,7 +681,6 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         layoutManagerBotonesPorcentajes.scrollToPosition(2);
     }
 
-    int ajustadorPorcentajes;
 
     @Override
     public void cambioPorcentaje(String porcentaje, Integer ajustadorPorcentajes) {
