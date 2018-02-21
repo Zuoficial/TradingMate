@@ -58,8 +58,8 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         invertido = getIntent().getExtras().getDouble("invertido");
         precio = getIntent().getExtras().getDouble("precio");
         comision = (getIntent().getExtras().getDouble("comision")) / 100;
-        comisionEntrada = .04;
-        comisionSalida = .04;
+        comisionEntrada = comision;
+        comisionSalida = comision;
         hayComisionEntrada = true;
         hayComisionSalida = true;
         modoComprar = getIntent().getExtras().getBoolean("modoComprar");
