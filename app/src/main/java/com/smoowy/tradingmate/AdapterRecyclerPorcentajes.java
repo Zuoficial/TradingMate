@@ -3,6 +3,7 @@ package com.smoowy.tradingmate;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v7.widget.RecyclerView;
@@ -41,12 +42,13 @@ public class AdapterRecyclerPorcentajes extends
     public AdapterRecyclerPorcentajes(Context context, Bundle bundle) {
         this.context = context;
         mInflater = LayoutInflater.from(context);
-        comisionEntrada = .04;
-        comisionSalida = .04;
+        comision = bundle.getDouble("comision");
+        comisionEntrada = comision;
+        comisionSalida = comision;
         invertido = bundle.getDouble("invertido");
         invertidoFinal = invertido * (1 - comisionEntrada);
         precio = bundle.getDouble("precio");
-        comision = bundle.getDouble("comision");
+
         invertidoDestino = (invertido / precio) * (1 - comisionEntrada);
         referenciaLiquidezDestino = 2;
         referenciaLiquidezOrigen = 1;
@@ -92,7 +94,7 @@ public class AdapterRecyclerPorcentajes extends
     @Override
     public void onBindViewHolder(Holder holder, int position) {
 
-        holder.fondo.setBackgroundResource(tablaColoresFinal.get(position));
+        // holder.fondo.setBackgroundResource(tablaColoresFinal.get(position));
         holder.textoGanancia.setText(tablaGananciasFinal.get(position));
         holder.textoPorcentaje.setText(tablaPorcentajeFinal.get(position));
         holder.textoPrecio.setText(tablaPrecioFinal.get(position));
@@ -100,10 +102,14 @@ public class AdapterRecyclerPorcentajes extends
         holder.textoLiquidez.setText(tablaLiquidezFinal.get(position));
 
 
-        if (tablaGananciasFinal.get(position).contains("+"))
+        if (tablaGananciasFinal.get(position).contains("+")) {
             holder.textoGanadoLetra.setText("Ganado");
-        else
+            holder.textoPorcentaje.setTextColor(Color.parseColor("#45c042"));
+        } else {
             holder.textoGanadoLetra.setText("Perdido");
+            holder.textoPorcentaje.setTextColor(Color.parseColor("#e53935"));
+
+        }
 
 
         if (modoComprar) {
@@ -161,9 +167,9 @@ public class AdapterRecyclerPorcentajes extends
 
                 } else {
 
-                    ganancia = (invertidoFinal / precioFinal) * tablaPorcentajesInvertida.get(i);
-                    tablaGananciasFinal.put(i, "+" + String.format(precisionDestino, ganancia) + " " + monedaDestinoNombre);
                     invertidoActual = invertidoFinal / precioFinal;
+                    ganancia = invertidoDestino * tablaPorcentajesInvertida.get(i);
+                    tablaGananciasFinal.put(i, "+" + String.format(precisionDestino, ganancia) + " " + monedaDestinoNombre);
                     tablaActualFinal.put(i, String.format(precisionDestino, invertidoActual) + " " + monedaDestinoNombre);
                     liquidez = invertidoActual * referenciaLiquidezDestino;
                     tablaLiquidezFinal.put(i, String.format("%.2f", liquidez) + " USD");
@@ -200,16 +206,15 @@ public class AdapterRecyclerPorcentajes extends
                     ganancia = invertido * tablaPorcentajes.get(iPositivo);
                     ganancia *= -1;
                     tablaGananciasFinal.put(i, String.format(precisionOrigen, ganancia) + " " + monedaOrigenNombre);
-                    invertidoActual = invertido * (1-tablaPorcentajes.get(iPositivo));
+                    invertidoActual = invertido * (1 - tablaPorcentajes.get(iPositivo));
                     tablaActualFinal.put(i, String.format(precisionOrigen, invertidoActual) + " " + monedaOrigenNombre);
                     liquidez = invertidoActual * referenciaLiquidezOrigen;
                     tablaLiquidezFinal.put(i, String.format("%.2f", liquidez) + " USD");
 
                 } else {
-                    ganancia = (invertidoFinal / precioFinal) * tablaPorcentajes.get(iPositivo);
-                    ganancia *= -1;
-                    tablaGananciasFinal.put(i, String.format(precisionDestino, ganancia) + " " + monedaDestinoNombre);
                     invertidoActual = invertidoFinal / precioFinal;
+                    ganancia = invertidoDestino *tablaPorcentajes.get(iPositivo);
+                    tablaGananciasFinal.put(i, String.format(precisionDestino, ganancia) + " " + monedaDestinoNombre);
                     tablaActualFinal.put(i, String.format(precisionDestino, invertidoActual) + " " + monedaDestinoNombre);
                     liquidez = invertidoActual * referenciaLiquidezDestino;
                     tablaLiquidezFinal.put(i, String.format("%.2f", liquidez) + " USD");
@@ -246,7 +251,10 @@ public class AdapterRecyclerPorcentajes extends
 
         } else {
 
-            precio *= 1 - porcentaje;
+
+
+                precio = invertidoDestino * (1 + porcentaje);
+                precio = invertidoFinal / precio;
         }
 
 
@@ -270,7 +278,8 @@ public class AdapterRecyclerPorcentajes extends
 
         } else {
             {
-                precio *= 1 + porcentaje;
+                precio = invertidoDestino * (1 - porcentaje);
+                precio = invertidoFinal / precio;
             }
         }
 
@@ -306,7 +315,7 @@ public class AdapterRecyclerPorcentajes extends
             textoLiquidez.setOnClickListener(onClickListener);
             textoBase.setOnClickListener(onClickListener);
             textoBase.setText(String.format(precisionPrecio, precio) + " " + monedaOrigenNombre);
-            fondo = itemView.findViewById(R.id.fondo);
+            // fondo = itemView.findViewById(R.id.fondo);
             vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 
         }

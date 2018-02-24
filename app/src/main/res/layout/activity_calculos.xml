@@ -26,72 +26,20 @@
             android:textSize="28dp" />
 
 
-        <RelativeLayout
-            android:id="@+id/botoneraSuperior"
-            android:layout_width="match_parent"
-            android:layout_height="95dp"
-            android:layout_below="@+id/encabezado"
-            android:layout_marginTop="5dp">
 
-            <Button
-                android:id="@+id/botonCazar"
-                android:layout_width="120dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="50dp"
-                android:fontFamily="@font/poetsenone_regular"
-                android:text="Cazar"
-                android:textSize="18dp"
-                style="@style/boton_superior"/>
-
-            <Button
-                android:id="@+id/botonComprar"
-                android:layout_width="120dp"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginEnd="50dp"
-                android:fontFamily="@font/poetsenone_regular"
-                android:text="Comprar"
-                android:textSize="18dp"
-                style="@style/boton_superior"/>
-
-            <Button
-                android:id="@+id/botonPorcentajes"
-                android:layout_width="130dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="50dp"
-                android:fontFamily="@font/poetsenone_regular"
-                style="@style/boton_superior"
-                android:text="Porcentajes"
-                android:textSize="18dp" />
-
-            <Button
-                android:id="@+id/botonCerrar"
-                android:layout_width="130dp"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginEnd="35dp"
-                android:layout_marginTop="50dp"
-                android:fontFamily="@font/poetsenone_regular"
-                android:text="Cerrar"
-                android:textSize="18dp"
-                style="@style/boton_superior"/>
-
-
-        </RelativeLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerBotonesPorcentaje"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_below="@+id/botoneraSuperior"
+            android:layout_below="@+id/encabezado"
             android:visibility="visible"
             tools:listitem="@layout/recycler_view_botones" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerCambioDePorcentajes"
             android:layout_width="match_parent"
-            android:layout_height="410dp"
+            android:layout_height="505dp"
             android:layout_below="@id/recyclerBotonesPorcentaje"
             android:visibility="gone"
             tools:listitem="@layout/recycler_view_porcentaje"
@@ -122,7 +70,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/fondo_botones"
-                android:fontFamily="@font/comforta_regular"
+                android:fontFamily="@font/comforta_bold"
                 android:text="%"
                 android:textColor="@android:color/white"
                 android:textSize="25dp"
@@ -167,7 +115,7 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/fondo_botones"
-                android:fontFamily="@font/comforta_regular"
+                android:fontFamily="@font/comforta_bold"
                 android:text="C"
                 android:textColor="@android:color/white"
                 android:textSize="25dp"
@@ -438,15 +386,9 @@
                 android:layout_centerVertical="true"
                 android:layout_marginBottom="28dp"
                 android:layout_marginStart="32dp"
-                android:background="@drawable/fondo_botones"
-                android:shadowColor="#000000"
-                android:shadowDx="7"
-                android:shadowDy="1"
-                android:shadowRadius="10"
                 android:text="Suspender"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="22dp" />
+                android:textSize="20dp"
+                style="@style/boton"/>
 
             <Button
                 android:id="@+id/button4"
@@ -456,14 +398,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginBottom="28dp"
                 android:layout_marginEnd="32dp"
-                android:background="@drawable/fondo_botones"
-                android:shadowColor="#000000"
-                android:shadowDx="7"
-                android:shadowDy="1"
-                android:shadowRadius="10"
                 android:text="Guardar"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
+                style="@style/boton"
                 android:textSize="22dp" />
 
         </RelativeLayout>
