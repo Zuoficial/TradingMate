@@ -52,7 +52,7 @@
 
 
             <Button
-                android:id="@+id/botonComprar"
+                android:id="@+id/botonCorta"
                 android:textColor="@android:color/white"
                 android:background="@android:color/transparent"
                 android:layout_below="@id/botonCazar"
@@ -60,7 +60,20 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/comforta_bold"
-                android:text="Comprar"
+                android:text="posicion corta"
+                android:textSize="25dp" />
+
+
+            <Button
+                android:id="@+id/botonLarga"
+                android:textColor="@android:color/white"
+                android:background="@android:color/transparent"
+                android:layout_below="@id/botonCorta"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/comforta_bold"
+                android:text="posicion larga"
                 android:textSize="25dp" />
 
 
@@ -69,7 +82,7 @@
                 android:id="@+id/botonCerrar"
                 android:textColor="@android:color/white"
                 android:background="@android:color/transparent"
-                android:layout_below="@+id/botonComprar"
+                android:layout_below="@+id/botonLarga"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"

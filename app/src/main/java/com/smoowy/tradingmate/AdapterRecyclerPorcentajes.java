@@ -4,9 +4,11 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
+import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,42 +27,38 @@ public class AdapterRecyclerPorcentajes extends
 
     ArrayList<Double> tablaPorcentajes,
             tablaPorcentajesInvertida;
-    TreeMap<Integer, String> tablaPrecioFinal,
-            tablaPorcentajeFinal, tablaGananciasFinal, tablaActualFinal, tablaLiquidezFinal;
-    TreeMap<Integer, Integer> tablaColoresFinal;
-    int iPositivo, ajustadorPorcentajes, ajustador;
+    TreeMap<Integer, Informacion> tablaInformacion;
+    int iPositivo, ajustadorPorcentajes, ajustador, modo;
     double invertido, invertidoFinal, ganancia, invertidoDestino,
-            precio, precioFinal, comision, porcentajeMostrar, invertidoActual,
-            porcentaje, referenciaLiquidezOrigen, referenciaLiquidezDestino, liquidez,
+            precio, precioFinal, porcentajeMostrar, invertidoActual,
+            porcentaje, liquidezOrigen, liquidezDestino, liquidez,
             comisionEntrada, comisionSalida;
     boolean modoComprar;
     String monedaOrigenNombre, monedaDestinoNombre;
     Context context;
-    String precisionOrigen, precisionDestino, precisionPrecio, precisionInversion;
+    String precisionOrigen, precisionDestino, liquidezNombre;
+    final int modoCazar = 0, modoCorta = 1, modoLarga = 2;
 
 
     public AdapterRecyclerPorcentajes(Context context, Bundle bundle) {
         this.context = context;
         mInflater = LayoutInflater.from(context);
-        comision = bundle.getDouble("comision");
-        comisionEntrada = comision;
-        comisionSalida = comision;
+        comisionEntrada = bundle.getDouble("comisionEntrada");
+        comisionSalida = bundle.getDouble("comisionSalida");
         invertido = bundle.getDouble("invertido");
-        invertidoFinal = invertido * (1 - comisionEntrada);
+        invertidoFinal = invertido;
         precio = bundle.getDouble("precio");
-
-        invertidoDestino = (invertido / precio) * (1 - comisionEntrada);
-        referenciaLiquidezDestino = 2;
-        referenciaLiquidezOrigen = 1;
+        invertidoDestino = (invertido / precio);
+        liquidezOrigen = bundle.getDouble("liquidezOrigen");
+        liquidezDestino = bundle.getDouble("liquidezDestino");
         monedaOrigenNombre = bundle.getString("monedaOrigenNombre");
         monedaDestinoNombre = bundle.getString("monedaDestinoNombre");
         precisionOrigen = bundle.getString("precisionOrigen");
         precisionDestino = bundle.getString("precisionDestino");
-        precisionPrecio = bundle.getString("precisionPrecio");
-        precisionInversion = bundle.getString("precisionInversion");
+        liquidezNombre = bundle.getString("liquidezNombre");
+        modo = bundle.getInt("modo");
         porcentaje = .01;
-        modoComprar = bundle.getBoolean("modoComprar");
-        hacerListas(modoComprar, porcentaje);
+        hacerListas(modo, porcentaje);
         ajustadorPorcentajes = 1;
 
     }
@@ -70,13 +68,13 @@ public class AdapterRecyclerPorcentajes extends
         this.porcentaje = Double.parseDouble(porcentaje.substring(0, porcentaje.length() - 1));
         this.porcentaje /= 100;
         this.ajustadorPorcentajes = multiplicador;
-        hacerListas(modoComprar, this.porcentaje);
+        hacerListas(modo, this.porcentaje);
         notifyDataSetChanged();
     }
 
-    public void cambioMoneda(boolean monedaOrigen) {
+    public void cambioModo(int modo) {
 
-        hacerListas(monedaOrigen, porcentaje);
+        hacerListas(modo, porcentaje);
         notifyDataSetChanged();
     }
 
@@ -94,15 +92,16 @@ public class AdapterRecyclerPorcentajes extends
     @Override
     public void onBindViewHolder(Holder holder, int position) {
 
-        // holder.fondo.setBackgroundResource(tablaColoresFinal.get(position));
-        holder.textoGanancia.setText(tablaGananciasFinal.get(position));
-        holder.textoPorcentaje.setText(tablaPorcentajeFinal.get(position));
-        holder.textoPrecio.setText(tablaPrecioFinal.get(position));
-        holder.textoActual.setText(tablaActualFinal.get(position));
-        holder.textoLiquidez.setText(tablaLiquidezFinal.get(position));
+        Informacion info = tablaInformacion.get(position);
+
+        holder.textoGanancia.setText(info.getGananciaFinal());
+        holder.textoPorcentaje.setText(info.getPorcentajeFinal());
+        holder.textoPrecio.setText(info.getPrecioFinal());
+        holder.textoActual.setText(info.getActualFinal());
+        holder.textoLiquidez.setText(info.getLiquidezFinal());
 
 
-        if (tablaGananciasFinal.get(position).contains("+")) {
+        if (info.getGananciaFinal().contains("+")) {
             holder.textoGanadoLetra.setText("Ganado");
             holder.textoPorcentaje.setTextColor(Color.parseColor("#45c042"));
         } else {
@@ -111,14 +110,17 @@ public class AdapterRecyclerPorcentajes extends
 
         }
 
+        if (modo == modoCazar) {
 
-        if (modoComprar) {
-            holder.textoInvertido.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
-            holder.textoUsando.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
-        } else {
             holder.textoInvertido.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
             holder.textoUsando.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
+        } else {
+
+            holder.textoInvertido.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
+            holder.textoUsando.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
         }
+
+
     }
 
     @Override
@@ -127,16 +129,12 @@ public class AdapterRecyclerPorcentajes extends
     }
 
 
-    void hacerListas(boolean monedaOrigen, double porcentaje) {
+    void hacerListas(int modo, double porcentaje) {
 
         tablaPorcentajes = new ArrayList<>();
-        tablaPrecioFinal = new TreeMap<>();
-        tablaPorcentajeFinal = new TreeMap<>();
-        tablaGananciasFinal = new TreeMap<>();
-        tablaColoresFinal = new TreeMap<>();
-        tablaActualFinal = new TreeMap<>();
-        tablaLiquidezFinal = new TreeMap<>();
-        this.modoComprar = monedaOrigen;
+        tablaInformacion = new TreeMap<>();
+
+        this.modo = modo;
 
         for (int i = 0; i < 100 * ajustadorPorcentajes; i++) {
             tablaPorcentajes.add(porcentaje * i);
@@ -147,39 +145,42 @@ public class AdapterRecyclerPorcentajes extends
 
 
         for (int i = 0; i < 199 * ajustadorPorcentajes; i++) {
+            Informacion info = new Informacion();
 
             if (i < 100 * ajustadorPorcentajes) {
 
-                tablaColoresFinal.put(i, R.drawable.fondo_marcador_positivo);
                 porcentajeMostrar = tablaPorcentajesInvertida.get(i) * 100;
                 precioFinal = positivo(precio, tablaPorcentajesInvertida.get(i));
-                tablaPrecioFinal.put(i, String.format(precisionPrecio, precioFinal) + " " + monedaOrigenNombre);
+                info.setPrecioFinal(String.format(precisionOrigen, precioFinal) + " " + monedaOrigenNombre);
 
-                if (this.modoComprar) {
 
-                    ganancia = invertido * tablaPorcentajesInvertida.get(i);
-                    tablaGananciasFinal.put(i, "+" + String.format(precisionOrigen, ganancia) + " " + monedaOrigenNombre);
-                    invertidoActual = invertido * (1 + tablaPorcentajesInvertida.get(i));
-                    tablaActualFinal.put(i, String.format(precisionOrigen, invertidoActual) + " " + monedaOrigenNombre);
-                    liquidez = invertidoActual * referenciaLiquidezOrigen;
-                    tablaLiquidezFinal.put(i, String.format("%.2f", liquidez) + " USD");
-                    tablaPorcentajeFinal.put(i, "+" + String.format("%.2f", porcentajeMostrar) + "%");
-
-                } else {
+                if (modo == modoCazar) {
 
                     invertidoActual = invertidoFinal / precioFinal;
-                    ganancia = invertidoDestino * tablaPorcentajesInvertida.get(i);
-                    tablaGananciasFinal.put(i, "+" + String.format(precisionDestino, ganancia) + " " + monedaDestinoNombre);
-                    tablaActualFinal.put(i, String.format(precisionDestino, invertidoActual) + " " + monedaDestinoNombre);
-                    liquidez = invertidoActual * referenciaLiquidezDestino;
-                    tablaLiquidezFinal.put(i, String.format("%.2f", liquidez) + " USD");
-                    tablaPorcentajeFinal.put(i, "+" + String.format("%.2f", porcentajeMostrar) + "%");
+                    ganancia = invertidoActual - invertidoDestino;
+                    info.setGananciaFinal("+" + String.format(precisionDestino, ganancia) + " " + monedaDestinoNombre);
+                    info.setActualFinal(String.format(precisionDestino, invertidoActual) + " " + monedaDestinoNombre);
+                    liquidez = invertidoActual * liquidezDestino;
+                    info.setLiquidezFinal(String.format("%.2f", liquidez) + " " + liquidezNombre);
+                    info.setPorcentajeFinal("+" + String.format("%.2f", porcentajeMostrar) + "%");
+
+
+                } else if (modo == modoCorta || modo == modoLarga) {
+
+                    invertidoActual = invertido * (1 + tablaPorcentajesInvertida.get(i));
+                    ganancia = invertidoActual - invertidoFinal;
+                    info.setGananciaFinal("+" + String.format(precisionOrigen, ganancia) + " " + monedaOrigenNombre);
+                    info.setActualFinal(String.format(precisionOrigen, invertidoActual) + " " + monedaOrigenNombre);
+                    liquidez = invertidoActual * liquidezOrigen;
+                    info.setLiquidezFinal(String.format("%.2f", liquidez) + " " + liquidezNombre);
+                    info.setPorcentajeFinal("+" + String.format("%.2f", porcentajeMostrar) + "%");
                 }
+
+                tablaInformacion.put(i, info);
 
 
             } else {
 
-                tablaColoresFinal.put(i, R.drawable.fondo_marcador_negativo);
 
                 iPositivo = i - 99 * ajustadorPorcentajes;
 
@@ -199,35 +200,35 @@ public class AdapterRecyclerPorcentajes extends
                 porcentajeMostrar *= -1;
                 precioFinal = negativo(
                         precio, tablaPorcentajes.get(iPositivo));
-                tablaPrecioFinal.put(i, String.format(precisionPrecio, precioFinal) + " " + monedaOrigenNombre);
+                info.setPrecioFinal(String.format(precisionOrigen, precioFinal) + " " + monedaOrigenNombre);
 
-                if (this.modoComprar) {
 
-                    ganancia = invertido * tablaPorcentajes.get(iPositivo);
-                    ganancia *= -1;
-                    tablaGananciasFinal.put(i, String.format(precisionOrigen, ganancia) + " " + monedaOrigenNombre);
-                    invertidoActual = invertido * (1 - tablaPorcentajes.get(iPositivo));
-                    tablaActualFinal.put(i, String.format(precisionOrigen, invertidoActual) + " " + monedaOrigenNombre);
-                    liquidez = invertidoActual * referenciaLiquidezOrigen;
-                    tablaLiquidezFinal.put(i, String.format("%.2f", liquidez) + " USD");
+                if (modo == modoCazar) {
 
-                } else {
                     invertidoActual = invertidoFinal / precioFinal;
-                    ganancia = invertidoDestino *tablaPorcentajes.get(iPositivo);
-                    tablaGananciasFinal.put(i, String.format(precisionDestino, ganancia) + " " + monedaDestinoNombre);
-                    tablaActualFinal.put(i, String.format(precisionDestino, invertidoActual) + " " + monedaDestinoNombre);
-                    liquidez = invertidoActual * referenciaLiquidezDestino;
-                    tablaLiquidezFinal.put(i, String.format("%.2f", liquidez) + " USD");
+                    ganancia = invertidoActual - invertidoDestino;
+                    info.setGananciaFinal(String.format(precisionDestino, ganancia) + " " + monedaDestinoNombre);
+                    info.setActualFinal(String.format(precisionDestino, invertidoActual) + " " + monedaDestinoNombre);
+                    liquidez = invertidoActual * liquidezDestino;
+                    info.setLiquidezFinal(String.format("%.2f", liquidez) + " " + liquidezNombre);
+
+                } else if (modo == modoLarga || modo == modoCorta) {
+
+                    invertidoActual = invertido * (1 - tablaPorcentajes.get(iPositivo));
+                    ganancia = invertidoActual - invertidoFinal;
+                    info.setGananciaFinal(String.format(precisionOrigen, ganancia) + " " + monedaOrigenNombre);
+                    info.setActualFinal(String.format(precisionOrigen, invertidoActual) + " " + monedaOrigenNombre);
+                    liquidez = invertidoActual * liquidezOrigen;
+                    info.setLiquidezFinal(String.format("%.2f", liquidez) + " " + liquidezNombre);
                 }
 
+                info.setPorcentajeFinal(String.format("%.2f", porcentajeMostrar) + "%");
 
-                tablaPorcentajeFinal.put(i, String.format("%.2f", porcentajeMostrar) + "%");
-
+                tablaInformacion.put(i, info);
 
             }
         }
 
-        tablaColoresFinal.put((99 * ajustadorPorcentajes) + ajustador, R.drawable.fondo_marcador_neutral);
 
     }
 
@@ -235,26 +236,26 @@ public class AdapterRecyclerPorcentajes extends
 
     double positivo(double precio, double porcentaje) {
 
-        // Incluye el pago de la comision
 
+        if (modo == modoCazar) {
+            precio = invertidoDestino * (1 + porcentaje);
+            precio = invertidoFinal / precio;
 
-        if (modoComprar) {
+        } else if (modo == modoCorta) {
 
-            a = invertidoFinal;
-            a /= precio;
+            a = invertidoDestino * (1 + porcentaje);
+            a *= (1 + comisionSalida);
+            a += (invertidoDestino * comisionEntrada);
+
+            precio = invertidoFinal / a;
+        } else if (modo == modoLarga) {
 
             b = invertido * (1 + porcentaje);
             b *= (1 + comisionSalida);
             b += (invertido * comisionEntrada);
 
-            precio = b / a;
+            precio = b / invertidoDestino;
 
-        } else {
-
-
-
-                precio = invertidoDestino * (1 + porcentaje);
-                precio = invertidoFinal / precio;
         }
 
 
@@ -263,26 +264,26 @@ public class AdapterRecyclerPorcentajes extends
 
     double negativo(double precio, double porcentaje) {
 
-        //Incluye el pago de la comision
 
-        if (modoComprar) {
+        if (modo == modoCazar) {
+            precio = invertidoDestino * (1 - porcentaje);
+            precio = invertidoFinal / precio;
+        } else if (modo == modoCorta) {
 
-            a = invertidoFinal;
-            a /= precio;
+            a = invertidoDestino * (1 - porcentaje);
+            a *= (1 + comisionSalida);
+            a += (invertidoDestino * comisionEntrada);
+
+            precio = invertidoFinal / a;
+        } else if (modo == modoLarga) {
 
             b = invertido * (1 - porcentaje);
             b *= (1 + comisionSalida);
             b += (invertido * comisionEntrada);
 
-            precio = b / a;
+            precio = b / invertidoDestino;
 
-        } else {
-            {
-                precio = invertidoDestino * (1 - porcentaje);
-                precio = invertidoFinal / precio;
-            }
         }
-
 
         return precio;
     }
@@ -314,7 +315,7 @@ public class AdapterRecyclerPorcentajes extends
             textoUsando.setOnClickListener(onClickListener);
             textoLiquidez.setOnClickListener(onClickListener);
             textoBase.setOnClickListener(onClickListener);
-            textoBase.setText(String.format(precisionPrecio, precio) + " " + monedaOrigenNombre);
+            textoBase.setText(String.format(precisionOrigen, precio) + " " + monedaOrigenNombre);
             // fondo = itemView.findViewById(R.id.fondo);
             vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -374,6 +375,57 @@ public class AdapterRecyclerPorcentajes extends
 
             }
         };
+
+    }
+
+    class Informacion {
+
+        public String getPrecioFinal() {
+            return precioFinal;
+        }
+
+        public void setPrecioFinal(String precioFinal) {
+            this.precioFinal = precioFinal;
+        }
+
+        public String getPorcentajeFinal() {
+            return porcentajeFinal;
+        }
+
+        public void setPorcentajeFinal(String porcentajeFinal) {
+            this.porcentajeFinal = porcentajeFinal;
+        }
+
+        public String getGananciaFinal() {
+            return gananciaFinal;
+        }
+
+        public void setGananciaFinal(String gananciaFinal) {
+            this.gananciaFinal = gananciaFinal;
+        }
+
+        public String getActualFinal() {
+            return actualFinal;
+        }
+
+        public void setActualFinal(String actualFinal) {
+            this.actualFinal = actualFinal;
+        }
+
+        public String getLiquidezFinal() {
+            return liquidezFinal;
+        }
+
+        public void setLiquidezFinal(String liquidezFinal) {
+            this.liquidezFinal = liquidezFinal;
+        }
+
+
+        String precioFinal;
+        String porcentajeFinal;
+        String gananciaFinal;
+        String actualFinal;
+        String liquidezFinal;
 
     }
 

@@ -9,7 +9,8 @@
     <color name="fondoPrincipal">#181818</color>
     <color name="colorBotones">#2a4594</color>
     <color name="colorBotonesPresionado">#17244b</color>
-    <color name="neutro">#b90e2129</color>
+    <color name="neutro">#95000000</color>
+    <color name="fondoDrawer">#b9000000</color>
     <color name="texto_boton_superior">#4b5255</color>
 
 </resources>

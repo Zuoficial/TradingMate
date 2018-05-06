@@ -15,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,29 +25,34 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
+
 public class Calculos extends AppCompatActivity implements Comunicador {
 
     RecyclerView recyclerBotonesPorcentajes, recyclerPorcentajes;
     AdapterRecyclerBotonesPorcentajes adapterRecyclerBotonesPorcentajes;
     AdapterRecyclerPorcentajes adapterRecyclerPorcentajes;
-    Button botonComprar, botonCazar, botonClear, botonPorcentajes,
+    Button botonCazar, botonCorta, botonLarga, botonClear, botonPorcentajes,
             botonCerrar, botonPorcentajeCalculador,
             botonPorcentajeCalculadorMenos, botonPorcentajeCalculadorMas;
     TextView encabezado, textoGanancia, textoInvertido, textoInvertidoActual, textoUsado, textoGananciaLetra,
             textoPorcentaje, textoPrecio, textoBase, textoLiquidez;
-    String monedaOrigenNombre, monedaDestinoNombre, monedaLiquidezNombre;
+    String monedaOrigenNombre, monedaDestinoNombre;
     EditText textoPrecioMod, textoPorcentajeMod;
-    double invertido, precio, comision, invertidoDestino, precioFinal,
+    double invertido, precio, invertidoDestino, precioFinal,
             precioIngresado, porcentajeFinal, gananciaFinal, invertidoActual, porcentajeIngresado,
-            liquidez, referenciaLiquidezOrigen, referenciaLiquidezDestino, comisionEntrada, comisionSalida, invertidoFinal;
-    int ajustadorPorcentajes;
-    boolean modoComprar, botonPorcentajesAplanado,
-            botonModoComprar, botonporcentajeCalculadorAplanado, botonPorcentajeCalculadorMasAplanado;
+            liquidezOrigen, liquidezDestino, comisionEntrada, comisionSalida, invertidoFinal, liquidez,
+            resultadoComisionEntrada, resultadoComisionSalida;
+    int ajustadorPorcentajes, modo;
+    final int modoCazar = 0, modoCorta = 1, modoLarga = 2;
+    boolean botonPorcentajesAplanado,
+            botonporcentajeCalculadorAplanado, botonPorcentajeCalculadorMasAplanado;
     Vibrator vibrator;
     String precisionOrigen, precisionDestino, precisionPrecio, precisionInversion, precisionLiquidez,
-            precisionOrigenNumero, precisionDestinoNumero, precisionPrecioNumero, precisionInversionNumero;
+            precisionOrigenNumero, precisionDestinoNumero, precisionPrecioNumero, precisionInversionNumero, liquidezNombre;
     RelativeLayout calculador;
-    boolean hayComisionEntrada, hayComisionSalida;
     DrawerLayout drawer;
 
     @Override
@@ -59,16 +65,12 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         calculador = findViewById(R.id.calculador);
         monedaOrigenNombre = getIntent().getExtras().getString("monedaOrigenNombre");
         monedaDestinoNombre = getIntent().getExtras().getString("monedaDestinoNombre");
-        monedaLiquidezNombre = "USD";
+        liquidezNombre = getIntent().getExtras().getString("liquidezNombre");
         invertido = getIntent().getExtras().getDouble("invertido");
         precio = getIntent().getExtras().getDouble("precio");
-        comision = (getIntent().getExtras().getDouble("comision")) / 100;
-        comisionEntrada = comision;
-        comisionSalida = comision;
-        hayComisionEntrada = true;
-        hayComisionSalida = true;
-        modoComprar = getIntent().getExtras().getBoolean("modoComprar");
-        botonModoComprar = modoComprar;
+        comisionEntrada = (getIntent().getExtras().getDouble("comisionEntrada")) / 100;
+        comisionSalida = (getIntent().getExtras().getDouble("comisionSalida")) / 100;
+        modo = getIntent().getExtras().getInt("modo");
         botonPorcentajesAplanado = getIntent().getExtras().getBoolean("botonPorcentajesAplanado");
         botonporcentajeCalculadorAplanado = false;
         botonPorcentajeCalculadorMasAplanado = true;
@@ -80,24 +82,25 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         precisionDestinoNumero = getIntent().getExtras().getString("precisionDestinoNumero");
         precisionPrecioNumero = getIntent().getExtras().getString("precisionPrecioNumero");
         precisionInversionNumero = getIntent().getExtras().getString("precisionInversionNumero");
-        referenciaLiquidezOrigen = 1;
-        referenciaLiquidezDestino = 10455;
+        liquidezOrigen = getIntent().getExtras().getDouble("liquidezOrigen");
+        liquidezDestino = getIntent().getExtras().getDouble("liquidezDestino");
         precisionLiquidez = "%.2f";
-
-        invertidoFinal = invertido * (1 - comisionEntrada);
-        invertidoDestino = (invertido / precio) * (1 - comisionEntrada);
+        invertidoFinal = invertido;
+        invertidoDestino = (invertido / precio);
         setRecyclerViewRecyclerBotonesPorcentajes();
         setRecyclerViewRecyclerPorcentajes();
-        botonComprar = findViewById(R.id.botonComprar);
         botonCazar = findViewById(R.id.botonCazar);
+        botonCorta = findViewById(R.id.botonCorta);
+        botonLarga = findViewById(R.id.botonLarga);
         botonClear = findViewById(R.id.botonClear);
         botonPorcentajes = findViewById(R.id.botonPorcentajes);
         botonCerrar = findViewById(R.id.botonCerrar);
         botonPorcentajeCalculador = findViewById(R.id.botonPorcentajeCalculador);
         botonPorcentajeCalculadorMas = findViewById(R.id.botonPorcentajeCalculadorMas);
         botonPorcentajeCalculadorMenos = findViewById(R.id.botonPorcentajeCalculadorMenos);
-        botonComprar.setOnTouchListener(onTouchListener);
         botonCazar.setOnTouchListener(onTouchListener);
+        botonCorta.setOnTouchListener(onTouchListener);
+        botonLarga.setOnTouchListener(onTouchListener);
         botonCerrar.setOnTouchListener(onTouchListener);
         botonPorcentajes.setOnTouchListener(onTouchListener);
         botonClear.setOnTouchListener(onTouchListener);
@@ -123,40 +126,23 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         textoBase.setText(String.format(precisionOrigen, precio) + " " + monedaOrigenNombre);
         textoBase.setOnTouchListener(onTouchListener);
         textoLiquidez = findViewById(R.id.textoLiquidez);
-        textoLiquidez.setText("0.00 " + monedaLiquidezNombre);
+        textoLiquidez.setText("0.00 " + liquidezNombre);
         textoLiquidez.setOnTouchListener(onTouchListener);
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        if (botonModoComprar)
-            setBotonComprar();
-        else
+        if (modo == modoCazar) {
             setBotonCazar();
+        } else if (modo == modoCorta) {
+            setBotonCorta();
+        } else if (modo == modoLarga) {
+            setBotonLarga();
+        }
+
 
         setBotonPorcentajesAplanado();
         ajustadorPorcentajes = 1;
         ajustadorPosicion(ajustadorPorcentajes);
         textoPrecioMod.clearFocus();
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        SharedPreferences sharedPreferences = getSharedPreferences("TradingMatePreferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("monedaOrigenNombre", monedaOrigenNombre);
-        editor.putString("monedaDestinoNombre", monedaDestinoNombre);
-        editor.putString("invertido", String.valueOf(invertido));
-        editor.putString("precio", String.valueOf(precio));
-        editor.putString("comision", String.valueOf((comision * 100)));
-        editor.putString("precisionOrigenNumero", precisionOrigenNumero);
-        editor.putString("precisionDestinoNumero", precisionDestinoNumero);
-        editor.putString("precisionPrecioNumero", precisionPrecioNumero);
-        editor.putString("precisionInversionNumero", precisionInversionNumero);
-
-
-        editor.apply();
-
-        super.onDestroy();
 
     }
 
@@ -177,7 +163,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                         textoPorcentajeMod.getText().toString().isEmpty()
                         ) {
 
-                    if (modoComprar)
+                    if (modo == modoCorta || modo == modoLarga)
                         textoGanancia.setText("+0.00 " + monedaOrigenNombre);
                     else
                         textoGanancia.setText("+0.00 " + monedaDestinoNombre);
@@ -190,7 +176,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                         ) {
 
                     textoPorcentaje.setText("+0.00%");
-                    if (modoComprar)
+                    if (modo == modoCorta || modo == modoLarga)
                         textoGanancia.setText("+0.00 " + monedaOrigenNombre);
                     else
                         textoGanancia.setText("+0.00 " + monedaDestinoNombre);
@@ -204,11 +190,14 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                 precioIngresado = (Double.parseDouble(textoPrecioMod.getText().toString()));
 
 
-            if (modoComprar) {
+            if (modo == modoCorta || modo == modoLarga) {
 
-                calculoModoComprar();
+                if (modo == modoCorta)
+                    calculoModoCorta();
+                else
+                    calculoModoLarga();
 
-                textoLiquidez.setText(String.format(precisionLiquidez, liquidez) + " " + monedaLiquidezNombre);
+                textoLiquidez.setText(String.format(precisionLiquidez, liquidez) + " " + liquidezNombre);
 
 
                 if (botonporcentajeCalculadorAplanado)
@@ -231,7 +220,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
 
                 calculoModoCazar();
 
-                textoLiquidez.setText(String.format(precisionLiquidez, liquidez) + " " + monedaLiquidezNombre);
+                textoLiquidez.setText(String.format(precisionLiquidez, liquidez) + " " + liquidezNombre);
 
 
                 if (botonporcentajeCalculadorAplanado) {
@@ -261,57 +250,9 @@ public class Calculos extends AppCompatActivity implements Comunicador {
 
         @Override
         public void afterTextChanged(Editable editable) {
-
         }
     };
 
-
-    private void calculoModoComprar() {
-
-
-        if (botonporcentajeCalculadorAplanado) {
-
-
-            if (!botonPorcentajeCalculadorMasAplanado)
-                porcentajeIngresado *= -1;
-
-            porcentajeIngresado /= 100;
-
-
-            double a;
-
-            a = invertido * (1 + porcentajeIngresado);
-            a *= (1 + comisionSalida);
-            a += (invertido * comisionEntrada);
-
-            precioFinal = a / invertidoDestino;
-            gananciaFinal = invertido * porcentajeIngresado;
-            invertidoActual = invertido * (1 + porcentajeIngresado);
-
-
-        } else {
-
-
-            double a = invertidoDestino;
-            a *= precioIngresado;
-            a -= invertido * comisionEntrada;
-            a /= 1 + comisionSalida;
-
-            porcentajeFinal = a / invertido;
-            porcentajeFinal -= 1;
-
-            invertidoActual = invertido * (1 + (porcentajeFinal));
-            gananciaFinal = invertido * porcentajeFinal;
-            porcentajeFinal *= 100;
-
-
-            positivo = gananciaFinal > 0;
-
-
-        }
-        liquidez = invertidoActual * referenciaLiquidezOrigen;
-
-    }
 
     private void calculoModoCazar() {
 
@@ -330,30 +271,122 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                 porcentajeFinal *= -1;
             }
 
-            double porcentajePrecio = precioIngresado / precio;
-            porcentajePrecio -= 1;
-            porcentajePrecio *= -1;
+
             invertidoActual = invertidoFinal / precioIngresado;
-            gananciaFinal = invertidoActual * porcentajePrecio;
+            gananciaFinal = invertidoActual - invertidoDestino;
 
 
         } else
 
         {
-            double porcentajeDePrecio = precioIngresado / precio;
-            porcentajeDePrecio -= 1;
-            porcentajeDePrecio *= -1;
+
             invertidoActual = invertidoFinal / precioIngresado;
-            gananciaFinal = invertidoActual * porcentajeDePrecio;
+            gananciaFinal = invertidoActual - invertidoDestino;
             porcentajeFinal = invertidoActual / invertidoDestino;
             porcentajeFinal -= 1;
             porcentajeFinal *= 100;
         }
 
 
-        liquidez = invertidoActual * referenciaLiquidezDestino;
+        liquidez = invertidoActual * liquidezDestino;
         positivo = gananciaFinal > 0;
 
+
+    }
+
+
+    private void calculoModoCorta() {
+
+
+        if (botonporcentajeCalculadorAplanado) {
+
+
+            if (!botonPorcentajeCalculadorMasAplanado)
+                porcentajeIngresado *= -1;
+
+            porcentajeIngresado /= 100;
+
+
+            double a;
+
+            a = invertidoDestino * (1 + porcentajeIngresado);
+            resultadoComisionSalida = a * comisionSalida;
+            resultadoComisionEntrada = invertidoDestino * comisionEntrada;
+            a += resultadoComisionSalida + resultadoComisionEntrada;
+
+            precioFinal = invertido / a;
+            invertidoActual = invertido * (1 + porcentajeIngresado);
+            gananciaFinal = invertidoActual - invertidoFinal;
+
+
+        } else {
+
+
+            double a;
+
+            a = invertido / precioIngresado;
+            resultadoComisionEntrada = invertidoDestino * comisionEntrada;
+            a -= resultadoComisionEntrada;
+            a /= 1 + comisionSalida;
+            resultadoComisionSalida = a * comisionSalida;
+
+
+            porcentajeFinal = a / invertidoDestino;
+            porcentajeFinal -= 1;
+            invertidoActual = invertido * (1 + porcentajeFinal);
+            gananciaFinal = invertidoActual - invertidoFinal;
+            porcentajeFinal *= 100;
+            positivo = gananciaFinal > 0;
+
+        }
+        liquidez = invertidoActual * liquidezOrigen;
+
+    }
+
+
+    private void calculoModoLarga() {
+
+
+        if (botonporcentajeCalculadorAplanado) {
+
+
+            if (!botonPorcentajeCalculadorMasAplanado)
+                porcentajeIngresado *= -1;
+
+            porcentajeIngresado /= 100;
+
+
+            double a;
+
+            a = invertido * (1 + porcentajeIngresado);
+            a *= (1 + comisionSalida);
+            a += (invertido * comisionEntrada);
+
+            precioFinal = a / invertidoDestino;
+            invertidoActual = invertido * (1 + porcentajeIngresado);
+            gananciaFinal = invertidoActual - invertidoFinal;
+
+
+        } else {
+
+
+            double a = invertidoDestino;
+            a *= precioIngresado;
+            a -= invertido * comisionEntrada;
+            a /= 1 + comisionSalida;
+
+            porcentajeFinal = a / invertido;
+            porcentajeFinal -= 1;
+            invertidoActual = invertido * (1 + (porcentajeFinal));
+            gananciaFinal = invertidoActual - invertidoFinal;
+            porcentajeFinal *= 100;
+
+
+            positivo = gananciaFinal > 0;
+
+
+        }
+        liquidez = invertidoActual * liquidezOrigen;
 
     }
 
@@ -371,21 +404,10 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                         break;
                     }
 
-                    case R.id.botonComprar: {
-                        drawer.closeDrawer(Gravity.START);
-                        if (botonModoComprar) {
-                            ajustadorPosicion(ajustadorPorcentajes);
-                            break;
-                        } else {
-                            setBotonComprar();
-                            ajustadorPosicion(ajustadorPorcentajes);
-                        }
-                        break;
 
-                    }
                     case R.id.botonCazar: {
                         drawer.closeDrawer(Gravity.START);
-                        if (!botonModoComprar) {
+                        if (modo == modoCazar) {
                             ajustadorPosicion(ajustadorPorcentajes);
                             break;
 
@@ -393,10 +415,36 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                             setBotonCazar();
                             ajustadorPosicion(ajustadorPorcentajes);
                         }
-
                         break;
 
                     }
+
+                    case R.id.botonCorta: {
+                        drawer.closeDrawer(Gravity.START);
+                        if (modo == modoCorta) {
+                            ajustadorPosicion(ajustadorPorcentajes);
+                            break;
+                        } else {
+                            setBotonCorta();
+                            ajustadorPosicion(ajustadorPorcentajes);
+                        }
+                        break;
+
+                    }
+
+                    case R.id.botonLarga: {
+                        drawer.closeDrawer(Gravity.START);
+                        if (modo == modoLarga) {
+                            ajustadorPosicion(ajustadorPorcentajes);
+                            break;
+                        } else {
+                            setBotonLarga();
+                            ajustadorPosicion(ajustadorPorcentajes);
+                        }
+                        break;
+
+                    }
+
 
                     case R.id.botonPorcentajes: {
                         drawer.closeDrawer(Gravity.START);
@@ -469,7 +517,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                             textoPrecioMod.setVisibility(View.GONE);
                             botonPorcentajeCalculadorMas.setVisibility(View.VISIBLE);
                             botonPorcentajeCalculadorMenos.setVisibility(View.VISIBLE);
-                            if (modoComprar)
+                            if (modo == modoCorta || modo == modoLarga)
                                 textoInvertidoActual.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
 
                             else
@@ -487,14 +535,14 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                             botonPorcentajeCalculadorMas.setVisibility(View.GONE);
                             botonPorcentajeCalculadorMenos.setVisibility(View.GONE);
 
-                            if (modoComprar)
+                            if (modo == modoCorta || modo == modoLarga)
                                 textoInvertidoActual.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
 
                             else
                                 textoInvertidoActual.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
 
                         }
-                        textoLiquidez.setText("0.00 " + monedaLiquidezNombre);
+                        textoLiquidez.setText("0.00 " + liquidezNombre);
 
                         break;
                     }
@@ -508,8 +556,8 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                             botonPorcentajeCalculadorMenos.setBackgroundResource(R.drawable.fondo_botones);
                             textoPorcentajeMod.setText("");
                             textoPrecio.setText("Precio");
-                            textoLiquidez.setText("0.00 " + monedaLiquidezNombre);
-                            if (modoComprar)
+                            textoLiquidez.setText("0.00 " + liquidezNombre);
+                            if (modo == modoCorta || modo == modoLarga)
 
                                 textoInvertidoActual.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
                             else
@@ -529,8 +577,8 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                             botonPorcentajeCalculadorMenos.setBackgroundResource(R.drawable.fondo_botones_presionado);
                             textoPorcentajeMod.setText("");
                             textoPrecio.setText("Precio");
-                            textoLiquidez.setText("0.00 " + monedaLiquidezNombre);
-                            if (modoComprar)
+                            textoLiquidez.setText("0.00 " + liquidezNombre);
+                            if (modo == modoCorta || modo == modoLarga)
 
                                 textoInvertidoActual.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
                             else
@@ -563,9 +611,9 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         textoPorcentajeMod.setText("");
         textoPorcentaje.setText("+0.00%");
         textoPrecio.setText("Precio");
-        textoLiquidez.setText("0.00 " + monedaLiquidezNombre);
+        textoLiquidez.setText("0.00 " + liquidezNombre);
 
-        if (modoComprar) {
+        if (modo == modoCorta || modo == modoLarga) {
 
             textoGanancia.setText("+0.00 " + monedaOrigenNombre);
             textoInvertido.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
@@ -582,14 +630,16 @@ public class Calculos extends AppCompatActivity implements Comunicador {
 
 
     private void setBotonCazar() {
-        botonComprar.setBackgroundResource(R.drawable.fondo_botones_superior);
         botonCazar.setBackgroundResource(R.drawable.fondo_botones_superior_presionado);
-        botonModoComprar = false;
+        botonCorta.setBackgroundResource(R.drawable.fondo_botones_superior);
+        botonLarga.setBackgroundResource(R.drawable.fondo_botones_superior);
 
-        modoComprar = false;
-        adapterRecyclerPorcentajes.cambioMoneda(modoComprar);
+        modo = modoCazar;
+        adapterRecyclerPorcentajes.cambioModo(modo);
         encabezado.setText("cazar " + monedaDestinoNombre + " con " + monedaOrigenNombre);
-        if (modoComprar) {
+
+
+        if (modo == modoCorta || modo == modoLarga) {
 
             textoGanancia.setText("+0.00 " + monedaOrigenNombre);
             textoInvertido.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
@@ -608,19 +658,19 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         textoPrecioMod.setText("");
         textoPrecioMod.clearFocus();
         textoPorcentaje.setText("+0.00%");
-        textoLiquidez.setText("0.00 " + monedaLiquidezNombre);
+        textoLiquidez.setText("0.00 " + liquidezNombre);
         ajustadorPosicion(ajustadorPorcentajes);
         vibrator.vibrate(50);
     }
 
-    private void setBotonComprar() {
-        botonComprar.setBackgroundResource(R.drawable.fondo_botones_superior_presionado);
+    private void setBotonCorta() {
         botonCazar.setBackgroundResource(R.drawable.fondo_botones_superior);
-        botonModoComprar = true;
-        modoComprar = true;
-        adapterRecyclerPorcentajes.cambioMoneda(modoComprar);
-        encabezado.setText(monedaDestinoNombre + " con " + monedaOrigenNombre);
-        if (modoComprar) {
+        botonCorta.setBackgroundResource(R.drawable.fondo_botones_superior_presionado);
+        botonLarga.setBackgroundResource(R.drawable.fondo_botones_superior);
+        modo = modoCorta;
+        adapterRecyclerPorcentajes.cambioModo(modo);
+        encabezado.setText("corta " + monedaDestinoNombre + " con " + monedaOrigenNombre);
+        if (modo == modoCorta || modo == modoLarga) {
 
             textoGanancia.setText("+0.00 " + monedaOrigenNombre);
             textoInvertido.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
@@ -639,7 +689,39 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         textoPrecioMod.setText("");
         textoPrecioMod.clearFocus();
         textoPorcentaje.setText("+0.00%");
-        textoLiquidez.setText("0.00 " + monedaLiquidezNombre);
+        textoLiquidez.setText("0.00 " + liquidezNombre);
+        ajustadorPosicion(ajustadorPorcentajes);
+        vibrator.vibrate(50);
+    }
+
+
+    private void setBotonLarga() {
+        botonCazar.setBackgroundResource(R.drawable.fondo_botones_superior);
+        botonCorta.setBackgroundResource(R.drawable.fondo_botones_superior);
+        botonLarga.setBackgroundResource(R.drawable.fondo_botones_superior_presionado);
+        modo = modoLarga;
+        adapterRecyclerPorcentajes.cambioModo(modo);
+        encabezado.setText("larga " + monedaDestinoNombre + " con " + monedaOrigenNombre);
+        if (modo == modoCorta || modo == modoLarga) {
+
+            textoGanancia.setText("+0.00 " + monedaOrigenNombre);
+            textoInvertido.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
+            textoInvertidoActual.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
+            textoUsado.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
+
+        } else {
+
+            textoGanancia.setText("+0.00 " + monedaDestinoNombre);
+            textoInvertido.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
+            textoInvertidoActual.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
+            textoUsado.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
+
+        }
+
+        textoPrecioMod.setText("");
+        textoPrecioMod.clearFocus();
+        textoPorcentaje.setText("+0.00%");
+        textoLiquidez.setText("0.00 " + liquidezNombre);
         ajustadorPosicion(ajustadorPorcentajes);
         vibrator.vibrate(50);
     }
@@ -673,12 +755,16 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         bundle.putString("monedaDestinoNombre", monedaDestinoNombre);
         bundle.putDouble("invertido", invertido);
         bundle.putDouble("precio", precio);
-        bundle.putDouble("comision", comision);
-        bundle.putBoolean("modoComprar", modoComprar);
+        bundle.putDouble("comisionEntrada", comisionEntrada);
+        bundle.putDouble("comisionSalida", comisionSalida);
+        bundle.putDouble("liquidezOrigen", liquidezOrigen);
+        bundle.putDouble("liquidezDestino", liquidezDestino);
+        bundle.putInt("modo", modo);
         bundle.putString("precisionOrigen", precisionOrigen);
         bundle.putString("precisionDestino", precisionDestino);
         bundle.putString("precisionPrecio", precisionPrecio);
         bundle.putString("precisionInversion", precisionInversion);
+        bundle.putString("liquidezNombre", liquidezNombre);
 
         adapterRecyclerPorcentajes = new AdapterRecyclerPorcentajes(this, bundle);
         recyclerPorcentajes.setAdapter(adapterRecyclerPorcentajes);

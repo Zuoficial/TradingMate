@@ -388,7 +388,8 @@
                 android:layout_marginStart="32dp"
                 android:text="Suspender"
                 android:textSize="20dp"
-                style="@style/boton"/>
+                style="@style/boton"
+                android:fontFamily="@font/comforta_bold"/>
 
             <Button
                 android:id="@+id/button4"
@@ -400,7 +401,8 @@
                 android:layout_marginEnd="32dp"
                 android:text="Guardar"
                 style="@style/boton"
-                android:textSize="22dp" />
+                android:textSize="20dp"
+                android:fontFamily="@font/comforta_bold"/>
 
         </RelativeLayout>
 
