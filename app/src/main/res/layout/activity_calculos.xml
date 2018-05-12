@@ -199,13 +199,13 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_marginBottom="223dp"
-                android:layout_marginLeft="23dp"
+                android:layout_marginLeft="16dp"
                 android:fontFamily="@font/comforta_regular"
                 android:maxLines="1"
                 android:text="Precio Base"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
-                android:textSize="15dp" />
+                android:textSize="17dp" />
 
 
             <TextView
@@ -235,7 +235,7 @@
                 android:text="Ref/Inv"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
-                android:textSize="15dp" />
+                android:textSize="17dp" />
 
 
             <TextView
@@ -265,7 +265,7 @@
                 android:text="Ganado"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
-                android:textSize="15dp" />
+                android:textSize="17dp" />
 
             <TextView
                 android:id="@+id/textoGanancia"
@@ -294,7 +294,7 @@
                 android:text="Actual"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
-                android:textSize="15dp" />
+                android:textSize="17dp" />
 
 
             <TextView
@@ -324,7 +324,7 @@
                 android:text="Usando"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
-                android:textSize="15dp" />
+                android:textSize="17dp" />
 
 
             <TextView
@@ -353,7 +353,7 @@
                 android:text="Ref/Liq"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
-                android:textSize="15dp" />
+                android:textSize="17dp" />
 
 
             <TextView
@@ -380,29 +380,18 @@
 
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/botonGuardar"
                 android:layout_width="142dp"
                 android:layout_height="54dp"
                 android:layout_centerVertical="true"
-                android:layout_marginBottom="28dp"
-                android:layout_marginStart="32dp"
-                android:text="Suspender"
+                android:layout_centerHorizontal="true"
+                android:text="Guardar "
                 android:textSize="20dp"
+                android:layout_marginTop="20dp"
                 style="@style/boton"
                 android:fontFamily="@font/comforta_bold"/>
 
-            <Button
-                android:id="@+id/button4"
-                android:layout_width="142dp"
-                android:layout_height="54dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginBottom="28dp"
-                android:layout_marginEnd="32dp"
-                android:text="Guardar"
-                style="@style/boton"
-                android:textSize="20dp"
-                android:fontFamily="@font/comforta_bold"/>
+
 
         </RelativeLayout>
 

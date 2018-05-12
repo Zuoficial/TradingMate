@@ -16,10 +16,59 @@ public class DB extends RealmObject {
     String comisionSalida;
     String precisionOrigen;
     String precisionDestino;
+    String precisionLiquidez;
     String liquidezOrigen;
     String liquidezDestino;
     String liquidezNombre;
+    String precioIn;
+    String precioOut;
+    String inversionInicio;
+    String ganadoInicio;
+    String actualInicio;
+    String inversionLiqInicio;
+    String ganadoLiqInicio;
+    String actualLiqInicio;
+    String precisionOrigenFormato;
+    String precisionDestinoFormato;
+    String precisionLiquidezFormato;
+    String usando;
     RealmList<DBOpInversiones> operaciones;
+    int modo;
+    Boolean botonPorcentajesAplanado;
+
+    public Boolean getBotonPorcentajesAplanado() {
+        return botonPorcentajesAplanado;
+    }
+
+    public void setBotonPorcentajesAplanado(Boolean botonPorcentajesAplanado) {
+        this.botonPorcentajesAplanado = botonPorcentajesAplanado;
+    }
+
+
+    public String getPrecisionLiquidez() {
+        return precisionLiquidez;
+    }
+
+    public void setPrecisionLiquidez(String precisionLiquidez) {
+        this.precisionLiquidez = precisionLiquidez;
+    }
+
+    public String getPrecisionLiquidezFormato() {
+        return precisionLiquidezFormato;
+    }
+
+    public void setPrecisionLiquidezFormato(String precisionLiquidezFormato) {
+        this.precisionLiquidezFormato = precisionLiquidezFormato;
+    }
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getMonedaOrigen() {
         return monedaOrigen;
@@ -109,8 +158,110 @@ public class DB extends RealmObject {
         this.liquidezNombre = liquidezNombre;
     }
 
+    public String getPrecioIn() {
+        return precioIn;
+    }
+
+    public void setPrecioIn(String precioIn) {
+        this.precioIn = precioIn;
+    }
+
+    public String getPrecioOut() {
+        return precioOut;
+    }
+
+    public void setPrecioOut(String precioOut) {
+        this.precioOut = precioOut;
+    }
+
+    public String getInversionInicio() {
+        return inversionInicio;
+    }
+
+    public void setInversionInicio(String inversionInicio) {
+        this.inversionInicio = inversionInicio;
+    }
+
+    public String getGanadoInicio() {
+        return ganadoInicio;
+    }
+
+    public void setGanadoInicio(String ganadoInicio) {
+        this.ganadoInicio = ganadoInicio;
+    }
+
+    public String getActualInicio() {
+        return actualInicio;
+    }
+
+    public void setActualInicio(String actualInicio) {
+        this.actualInicio = actualInicio;
+    }
+
+    public String getInversionLiqInicio() {
+        return inversionLiqInicio;
+    }
+
+    public void setInversionLiqInicio(String inversionLiqInicio) {
+        this.inversionLiqInicio = inversionLiqInicio;
+    }
+
+    public String getGanadoLiqInicio() {
+        return ganadoLiqInicio;
+    }
+
+    public void setGanadoLiqInicio(String ganadoLiqInicio) {
+        this.ganadoLiqInicio = ganadoLiqInicio;
+    }
+
+    public String getActualLiqInicio() {
+        return actualLiqInicio;
+    }
+
+    public void setActualLiqInicio(String actualLiqInicio) {
+        this.actualLiqInicio = actualLiqInicio;
+    }
+
+    public RealmList<DBOpInversiones> getOperaciones() {
+        return operaciones;
+    }
+
+    public void setOperaciones(RealmList<DBOpInversiones> operaciones) {
+        this.operaciones = operaciones;
+    }
+
+    public int getModo() {
+        return modo;
+    }
+
+    public void setModo(int modo) {
+        this.modo = modo;
+    }
+
+    public String getUsando() {
+        return usando;
+    }
+
+    public void setUsando(String usando) {
+        this.usando = usando;
+    }
 
 
+    public String getPrecisionOrigenFormato() {
+        return precisionOrigenFormato;
+    }
+
+    public void setPrecisionOrigenFormato(String precisionOrigenFormato) {
+        this.precisionOrigenFormato = precisionOrigenFormato;
+    }
+
+    public String getPrecisionDestinoFormato() {
+        return precisionDestinoFormato;
+    }
+
+    public void setPrecisionDestinoFormato(String precisionDestinoFormato) {
+        this.precisionDestinoFormato = precisionDestinoFormato;
+    }
 
 
 }
