@@ -5,7 +5,6 @@ import io.realm.RealmObject;
 public class DBOpInversiones extends RealmObject {
 
     int id;
-    String inversion;
 
     public int getId() {
         return id;
@@ -15,31 +14,32 @@ public class DBOpInversiones extends RealmObject {
         this.id = id;
     }
 
-    public String getInversion() {
+    public Double getInversion() {
         return inversion;
     }
 
-    public void setInversion(String inversion) {
+    public void setInversion(Double inversion) {
         this.inversion = inversion;
     }
 
-    public String getCantidad() {
+    public Double getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(String cantidad) {
+    public void setCantidad(Double cantidad) {
         this.cantidad = cantidad;
     }
 
-    public String getPrecio() {
+    public Double getPrecio() {
         return precio;
     }
 
-    public void setPrecio(String precio) {
+    public void setPrecio(Double precio) {
         this.precio = precio;
     }
 
-    String cantidad;
-    String precio;
+    Double inversion;
+    Double cantidad;
+    Double precio;
 
 }

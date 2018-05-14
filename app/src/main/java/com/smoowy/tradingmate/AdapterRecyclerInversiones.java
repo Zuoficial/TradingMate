@@ -17,6 +17,8 @@ public class AdapterRecyclerInversiones extends RecyclerView.Adapter<AdapterRecy
     int datos;
     ArrayList<DBOpInversiones> lista;
     ArrayList<DBOpInversiones> listaRespaldo;
+    String monedaOrigen, monedaDestino;
+    String precisionOrigenFormato, precisionDestinoFormato;
 
     public AdapterRecyclerInversiones(Context context) {
 
@@ -42,10 +44,9 @@ public class AdapterRecyclerInversiones extends RecyclerView.Adapter<AdapterRecy
             return;
 
         DBOpInversiones op = lista.get(position);
-
-        holder.inversion.setText(op.getInversion());
-        holder.cantidad.setText(op.getCantidad());
-        holder.precio.setText(op.getPrecio());
+        holder.inversion.setText(String.format(precisionOrigenFormato, op.getInversion()) + " " + monedaOrigen);
+        holder.cantidad.setText(String.format(precisionDestinoFormato, op.getCantidad()) + " " + monedaDestino);
+        holder.precio.setText(String.format(precisionOrigenFormato, op.getPrecio()) + " " + monedaOrigen);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class AdapterRecyclerInversiones extends RecyclerView.Adapter<AdapterRecy
     }
 
 
-    public void agregarDatos(String precio, String inversion, String cantidad) {
+    public void agregarDatos(Double precio, Double inversion, Double cantidad) {
         datos += 1;
         DBOpInversiones op = new DBOpInversiones();
         op.setCantidad(cantidad);
@@ -76,7 +77,7 @@ public class AdapterRecyclerInversiones extends RecyclerView.Adapter<AdapterRecy
 
     public void recuperarDatos() {
         lista = new ArrayList<>(listaRespaldo);
-        datos +=1;
+        datos += 1;
         notifyDataSetChanged();
     }
 

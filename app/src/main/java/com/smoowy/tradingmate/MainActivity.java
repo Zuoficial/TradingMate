@@ -12,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,23 +28,22 @@ import java.util.Arrays;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import io.realm.RealmResults;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Button botonCazar, botonCorta, botonLarga, botonEmpezar,
-            botonPorcentajes, botonAgregarInversion, botonCambioInversion;
+            botonPorcentajes, botonAgregarInversion, botonCambioInversion, botonForex;
     EditText invertido, precio, comisionEntrada, comisionSalida, monedaOrigen, monedaDestino,
             precisionOrigen, precisionDestino, liquidezOrigen, liquidezDestino,
             liquidezNombre, precisionLiquidez;
-    TextView encabezadoInversion;
+    TextView encabezadoInversion, comisionEntradaLetra, comisionSalidaLetra;
     int selectorCambioInversion = 0, idOperacion;
     final int cambioInversionOrigen = 0, cambioInversionDestino = 1,
             cambioInversionOrigenLiquidez = 2, cambioInversionDestinoLiquidez = 3;
-    boolean botonPorcentajesAplanado, botonAgregarInversionAplanado;
-    String precioIn, inversionInicio;
+    boolean botonPorcentajesAplanado, botonAgregarInversionAplanado, enForex;
+    String precioIn, inversionInicio, inversionDestinoInicio;
     String precisionOrigenFormato, precisionDestinoFormato, precisionLiquidezFormato;
     Vibrator vibrator;
     DrawerLayout drawer;
@@ -64,11 +65,14 @@ public class MainActivity extends AppCompatActivity
         botonPorcentajes = findViewById(R.id.botonPorcentajes);
         botonAgregarInversion = findViewById(R.id.botonAgregarInversion);
         botonCambioInversion = findViewById(R.id.botonCambioInversion);
+        botonForex = findViewById(R.id.botonForex);
         encabezadoInversion = findViewById(R.id.encabezadoInversion);
         invertido = findViewById(R.id.inversion);
         precio = findViewById(R.id.precio);
         comisionEntrada = findViewById(R.id.comisionEntrada);
+        comisionEntradaLetra = findViewById(R.id.comisionEntradaLetra);
         comisionSalida = findViewById(R.id.comisionSalida);
+        comisionSalidaLetra = findViewById(R.id.comisionSalidaLetra);
         liquidezDestino = findViewById(R.id.liquidezDestino);
         liquidezOrigen = findViewById(R.id.liquidezOrigen);
         liquidezNombre = findViewById(R.id.liquidezNombre);
@@ -84,22 +88,57 @@ public class MainActivity extends AppCompatActivity
         botonPorcentajes.setOnTouchListener(onTouchListener);
         botonAgregarInversion.setOnTouchListener(onTouchListener);
         botonCambioInversion.setOnTouchListener(onTouchListener);
+        botonForex.setOnTouchListener(onTouchListener);
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
-
+        precisionOrigen.addTextChangedListener(textWatcher);
+        precisionDestino.addTextChangedListener(textWatcher);
         drawer = findViewById(R.id.drawer_layout);
-
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         botonPorcentajesAplanado = false;
         setBotonPorcentajes();
-
-
         setRecyclerViewInversiones();
-
         acccederDB();
 
+
     }
+
+    TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            if (precisionOrigen.getText().toString().isEmpty()) {
+
+                precisionOrigenFormato = "%,.8f";
+
+            } else
+                precisionOrigenFormato = "%,." + precisionOrigen.getText().toString() + "f";
+
+
+            if (precisionDestino.getText().toString().isEmpty()) {
+
+                precisionDestinoFormato = "%,.8f";
+
+            } else
+                precisionDestinoFormato = "%,." + precisionDestino.getText().toString() + "f";
+
+
+            adapterRecyclerInversiones.precisionOrigenFormato = precisionOrigenFormato;
+            adapterRecyclerInversiones.precisionDestinoFormato = precisionDestinoFormato;
+            adapterRecyclerInversiones.notifyDataSetChanged();
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+    };
+
 
     private void acccederDB() {
         Realm.init(this);
@@ -112,14 +151,41 @@ public class MainActivity extends AppCompatActivity
         monedaDestino.setText(db.getMonedaDestino());
         invertido.setText(db.getInvertido());
         precio.setText(db.getPrecio());
-        comisionEntrada.setText(db.getComisionEntrada());
-        comisionSalida.setText(db.getComisionSalida());
-        liquidezOrigen.setText(db.getLiquidezOrigen());
-        liquidezDestino.setText(db.getLiquidezDestino());
+
+        if (db.getEnForex() != null) {
+
+
+            if (db.getEnForex()) {
+                setBotonForex();
+                if (db.getComisionEntrada() == null || !db.getComisionEntrada().equals("0"))
+                    comisionEntrada.setText(db.getComisionEntrada());
+
+
+                if (db.getComisionSalida() == null || !db.getComisionSalida().equals("0"))
+                    comisionSalida.setText(db.getComisionSalida());
+
+
+            } else {
+
+                enForex = db.getEnForex();
+                if (db.getComisionEntrada() == null || !db.getComisionEntrada().equals("0"))
+                    comisionEntrada.setText(db.getComisionEntrada());
+                if (db.getComisionSalida() == null || !db.getComisionSalida().equals("0"))
+                    comisionSalida.setText(db.getComisionSalida());
+            }
+        }
+
+
+        if (db.getLiquidezOrigen() == null || !db.getLiquidezOrigen().equals("0"))
+            liquidezOrigen.setText(db.getLiquidezOrigen());
+        if (db.getLiquidezDestino() == null || !db.getLiquidezDestino().equals("0"))
+            liquidezDestino.setText(db.getLiquidezDestino());
         precisionOrigen.setText(db.getPrecisionOrigen());
         precisionDestino.setText(db.getPrecisionDestino());
         liquidezNombre.setText(db.getLiquidezNombre());
         precisionLiquidez.setText(db.getPrecisionLiquidez());
+        adapterRecyclerInversiones.monedaOrigen = db.getMonedaOrigen();
+        adapterRecyclerInversiones.monedaDestino = db.getMonedaDestino();
         adapterRecyclerInversiones.lista.addAll(db.operaciones);
         adapterRecyclerInversiones.datos = adapterRecyclerInversiones.lista.size();
         adapterRecyclerInversiones.notifyDataSetChanged();
@@ -133,7 +199,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void execute(Realm realm) {
 
-                if (!inversionInicio.equals(db.getPrecioIn()) || !precioIn.equals(db.getPrecioIn())) {
+                if (!inversionInicio.equals(db.getInversionInicio()) || !precioIn.equals(db.getPrecioIn())) {
 
                     db.deleteFromRealm();
                     db = realm.createObject(DB.class, idOperacion);
@@ -144,15 +210,30 @@ public class MainActivity extends AppCompatActivity
                 db.setMonedaDestino(monedaDestino.getText().toString().toUpperCase());
                 db.setInvertido(invertido.getText().toString());
                 db.setPrecio(precio.getText().toString());
-                db.setComisionEntrada(comisionEntrada.getText().toString());
-                db.setComisionSalida(comisionSalida.getText().toString());
-                db.setLiquidezOrigen(liquidezOrigen.getText().toString().isEmpty() ? "1" : liquidezOrigen.getText().toString());
-                db.setLiquidezDestino(liquidezDestino.getText().toString());
+                if (enForex) {
+
+                    db.setComisionEntrada(comisionEntrada.getText().toString().isEmpty() ? "0" :
+                            comisionEntrada.getText().toString());
+                    db.setComisionSalida(comisionSalida.getText().toString().isEmpty() ? "0" :
+                            comisionSalida.getText().toString());
+
+
+                } else {
+
+                    db.setComisionEntrada(comisionEntrada.getText().toString().isEmpty() ? "0" : comisionEntrada.getText().toString());
+                    db.setComisionSalida(comisionSalida.getText().toString().isEmpty() ? "0" : comisionSalida.getText().toString());
+
+                }
+                db.setEnForex(enForex);
+                db.setLiquidezOrigen(liquidezOrigen.getText().toString().isEmpty() ? "0" : liquidezOrigen.getText().toString());
+                db.setLiquidezDestino(liquidezDestino.getText().toString().isEmpty() ? "0" : liquidezDestino.getText().toString());
                 db.setLiquidezNombre(liquidezNombre.getText().toString().toUpperCase());
                 db.operaciones.clear();
                 db.operaciones.addAll(adapterRecyclerInversiones.lista);
                 db.setModo(modo);
                 db.setInversionInicio(inversionInicio);
+                db.setActualInicio(inversionInicio);
+                db.setUsando(inversionDestinoInicio);
                 db.setPrecioIn(precioIn);
                 db.setPrecisionOrigen(precisionOrigen.getText().toString());
                 db.setPrecisionDestino(precisionDestino.getText().toString());
@@ -162,7 +243,6 @@ public class MainActivity extends AppCompatActivity
                 db.setPrecisionLiquidezFormato(precisionLiquidezFormato);
                 db.setBotonPorcentajesAplanado(botonPorcentajesAplanado);
                 db.setGanadoInicio(String.valueOf(0));
-                db.setActualInicio(String.valueOf(0));
 
 
             }
@@ -213,7 +293,9 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+
         itemTouchHelper.attachToRecyclerView(recyclerViewInversiones);
+
     }
 
     View.OnTouchListener onTouchListener = new View.OnTouchListener() {
@@ -244,15 +326,15 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     case R.id.botonPorcentajes: {
-
                         setBotonPorcentajes();
-
                         break;
                     }
+
                     case R.id.botonEmpezar: {
                         empezarCalculos();
                         break;
                     }
+
                     case R.id.botonAgregarInversion: {
 
                         botonAgregarInversionAplanado = true;
@@ -293,12 +375,20 @@ public class MainActivity extends AppCompatActivity
                             case cambioInversionDestinoLiquidez: {
                                 encabezadoInversion.setText("Inversion destino con liquidez");
                                 break;
-
                             }
+
                         }
-
-
+                        break;
                     }
+                    case R.id.botonForex: {
+
+                        setBotonForex();
+
+
+                        break;
+                    }
+
+
                 }
 
 
@@ -308,6 +398,21 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
     };
+
+    private void setBotonForex() {
+        if (enForex) {
+            botonForex.setBackgroundResource(R.drawable.fondo_marcador_neutral);
+            comisionEntradaLetra.setText("Comision entrada %");
+            comisionSalidaLetra.setText("Comision salida %");
+            enForex = false;
+
+        } else {
+            botonForex.setBackgroundResource(R.drawable.fondo_boton_forex);
+            comisionEntradaLetra.setText("Comision entrada pips");
+            comisionSalidaLetra.setText("Comision salida pips");
+            enForex = true;
+        }
+    }
 
     private void cambiarModo() {
 
@@ -341,70 +446,50 @@ public class MainActivity extends AppCompatActivity
 
     private void agregarInversion() {
 
-        double precioNum = 0, invertidoNum = 0, cantidadNum = 0;
+        double precioImportar = 0, invertidoImportar = 0, cantidadImportar = 0;
 
-        precioNum = Double.parseDouble(precio.getText().toString());
+        precioImportar = Double.parseDouble(precio.getText().toString());
 
 
         switch (selectorCambioInversion) {
 
 
             case cambioInversionOrigen: {
-                invertidoNum = Double.parseDouble(invertido.getText().toString());
-                cantidadNum = invertidoNum / precioNum;
+                invertidoImportar = Double.parseDouble(invertido.getText().toString());
+                cantidadImportar = invertidoImportar / precioImportar;
                 break;
 
             }
             case cambioInversionDestino: {
-                cantidadNum = Double.parseDouble(invertido.getText().toString());
-                invertidoNum = cantidadNum * precioNum;
+                cantidadImportar = Double.parseDouble(invertido.getText().toString());
+                invertidoImportar = cantidadImportar * precioImportar;
                 break;
 
             }
             case cambioInversionOrigenLiquidez: {
-                invertidoNum = Double.parseDouble(invertido.getText().toString());
-                invertidoNum /= Double.parseDouble(liquidezOrigen.getText().toString());
-                cantidadNum = invertidoNum / precioNum;
+                invertidoImportar = Double.parseDouble(invertido.getText().toString());
+                invertidoImportar /= Double.parseDouble(liquidezOrigen.getText().toString());
+                cantidadImportar = invertidoImportar / precioImportar;
                 break;
             }
 
             case cambioInversionDestinoLiquidez: {
-                cantidadNum = Double.parseDouble(invertido.getText().toString());
-                cantidadNum /= Double.parseDouble(liquidezDestino.getText().toString());
-                invertidoNum = cantidadNum * precioNum;
+                cantidadImportar = Double.parseDouble(invertido.getText().toString());
+                cantidadImportar /= Double.parseDouble(liquidezDestino.getText().toString());
+                invertidoImportar = cantidadImportar * precioImportar;
                 break;
 
             }
         }
 
 
-        String precioImportar, invertidoImportar, cantidadImportar,
-                formatoImportarOrigen, formatoImportarDestino;
-
-        if (precisionOrigen.getText().toString().isEmpty()) {
-
-            formatoImportarOrigen = "%.8f";
-
-        } else
-            formatoImportarOrigen = "%." + precisionOrigen.getText().toString() + "f";
-
-
-        if (precisionDestino.getText().toString().isEmpty()) {
-
-            formatoImportarDestino = "%.8f";
-
-        } else
-            formatoImportarDestino = "%." + precisionDestino.getText().toString() + "f";
-
-        precioImportar = String.format(formatoImportarOrigen, precioNum);
-        invertidoImportar = String.format(formatoImportarOrigen, invertidoNum);
-        cantidadImportar = String.format(formatoImportarDestino, cantidadNum);
-
         precio.setText("");
         invertido.setText("");
 
         adapterRecyclerInversiones.agregarDatos(precioImportar,
                 invertidoImportar, cantidadImportar);
+        adapterRecyclerInversiones.monedaOrigen = monedaOrigen.getText().toString();
+        adapterRecyclerInversiones.monedaDestino = monedaDestino.getText().toString();
     }
 
     private void setBotonPorcentajes() {
@@ -437,14 +522,11 @@ public class MainActivity extends AppCompatActivity
 
             precisionOrigenFormato = "%.8f";
 
-            mIntent.putExtra("precisionOrigen", precisionOrigenFormato);
-
 
         } else {
 
             precisionOrigenFormato = "%." + precisionOrigen.getText().toString() + "f";
 
-            mIntent.putExtra("precisionOrigen", precisionOrigenFormato);
 
         }
 
@@ -453,13 +535,11 @@ public class MainActivity extends AppCompatActivity
 
             precisionDestinoFormato = "%.8f";
 
-            mIntent.putExtra("precisionDestino", precisionDestinoFormato);
 
         } else {
 
             precisionDestinoFormato = "%." + precisionDestino.getText().toString() + "f";
 
-            mIntent.putExtra("precisionDestino", precisionDestinoFormato);
 
         }
 
@@ -467,42 +547,13 @@ public class MainActivity extends AppCompatActivity
 
             precisionLiquidezFormato = "%.2f";
 
-            mIntent.putExtra("precisionLiquidez", precisionLiquidezFormato);
 
         } else {
 
             precisionLiquidezFormato = "%." + precisionLiquidez.getText().toString() + "f";
 
-            mIntent.putExtra("precisionLiquidez", precisionLiquidezFormato);
 
         }
-
-
-        if (liquidezNombre.getText().toString().isEmpty())
-            mIntent.putExtra("liquidezNombre", "USD");
-        else
-            mIntent.putExtra("liquidezNombre", liquidezNombre.getText().toString().toUpperCase());
-
-
-        if (liquidezOrigen.getText().toString().isEmpty())
-            mIntent.putExtra("liquidezOrigen", 1.0);
-        else
-            mIntent.putExtra("liquidezOrigen", Double.parseDouble(liquidezOrigen.getText().toString()));
-
-        if (liquidezDestino.getText().toString().isEmpty())
-            mIntent.putExtra("liquidezDestino", 1.0);
-        else
-            mIntent.putExtra("liquidezDestino", Double.parseDouble(liquidezDestino.getText().toString()));
-
-
-        mIntent.putExtra("precisionOrigenNumero", precisionOrigen.getText().toString());
-        mIntent.putExtra("precisionDestinoNumero", precisionDestino.getText().toString());
-        mIntent.putExtra("monedaOrigenNombre", monedaOrigen.getText().toString().toUpperCase());
-        mIntent.putExtra("monedaDestinoNombre", monedaDestino.getText().toString().toUpperCase());
-        mIntent.putExtra("comisionEntrada", Double.parseDouble(comisionEntrada.getText().toString()));
-        mIntent.putExtra("comisionSalida", Double.parseDouble(comisionSalida.getText().toString()));
-        mIntent.putExtra("modo", modo);
-        mIntent.putExtra("botonPorcentajesAplanado", botonPorcentajesAplanado);
 
 
         int numeroDeDatos = adapterRecyclerInversiones.lista.size();
@@ -513,8 +564,8 @@ public class MainActivity extends AppCompatActivity
 
         for (int i = 0; i < numeroDeDatos; i++) {
 
-            precio = Double.parseDouble(adapterRecyclerInversiones.lista.get(i).getPrecio());
-            inversion = Double.parseDouble(adapterRecyclerInversiones.lista.get(i).getInversion());
+            precio = adapterRecyclerInversiones.lista.get(i).getPrecio();
+            inversion = adapterRecyclerInversiones.lista.get(i).getInversion();
 
             invertidoFinalVarios += (inversion / precio);
             invertidoVariosImportar += inversion;
@@ -522,34 +573,32 @@ public class MainActivity extends AppCompatActivity
         }
 
         precioVariosImportar = invertidoVariosImportar / invertidoFinalVarios;
-
-        mIntent.putExtra("precio", precioVariosImportar);
         precioIn = String.format(precisionOrigenFormato, precioVariosImportar);
-        mIntent.putExtra("invertido", invertidoVariosImportar);
         inversionInicio = String.format(precisionOrigenFormato, invertidoVariosImportar);
-        mIntent.putExtra("idOperacion", idOperacion);
-
+        inversionDestinoInicio = String.format(precisionDestinoFormato,
+                (invertidoVariosImportar / precioVariosImportar));
         guardarDB();
-        startActivityForResult(mIntent, 1);
+
+        mIntent.putExtra("idOperacion", idOperacion);
+        startActivity(mIntent);
     }
 
     private boolean checarSiFaltanDatos() {
         ArrayList<EditText> listaDeRevisionArray;
 
         if (adapterRecyclerInversiones.lista.size() > 0) {
-            EditText[] listaDeRevision = {monedaOrigen, monedaDestino,
-                    comisionEntrada, comisionSalida};
+            EditText[] listaDeRevision = {monedaOrigen, monedaDestino};
             listaDeRevisionArray = new ArrayList<>(Arrays.asList(listaDeRevision));
         } else {
             EditText[] listaDeRevision = {monedaOrigen, monedaDestino,
-                    comisionEntrada, comisionSalida, precio, invertido};
+                    precio, invertido};
             listaDeRevisionArray = new ArrayList<>(Arrays.asList(listaDeRevision));
         }
 
 
         if (botonAgregarInversionAplanado) {
             EditText[] listaDeRevision = {monedaOrigen, monedaDestino,
-                    comisionEntrada, comisionSalida, precio, invertido};
+                    precio, invertido};
             listaDeRevisionArray = new ArrayList<>(Arrays.asList(listaDeRevision));
             botonAgregarInversionAplanado = false;
         }
@@ -573,11 +622,11 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            Intent i = getBaseContext().getPackageManager().
+          /*  Intent i = getBaseContext().getPackageManager().
                     getLaunchIntentForPackage(getBaseContext().getPackageName());
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
+            startActivity(i);*/
             super.onBackPressed();
         }
     }
@@ -614,22 +663,22 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onDestroy() {
 
-        drawer.closeDrawer(Gravity.START);
-        if (requestCode == 1)
-            if (data != null) {
-                if (data.getExtras().getBoolean("salir", false)) {
-                    Intent i = getBaseContext().getPackageManager().
-                            getLaunchIntentForPackage(getBaseContext().getPackageName());
-                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
+        if (checarSiFaltanDatos()) {
+
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    db.deleteFromRealm();
                 }
-            }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+            });
 
+
+        }
+
+        super.onDestroy();
+    }
 }
 
 

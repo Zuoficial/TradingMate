@@ -35,6 +35,15 @@ public class DB extends RealmObject {
     RealmList<DBOpInversiones> operaciones;
     int modo;
     Boolean botonPorcentajesAplanado;
+    Boolean enForex;
+
+    public Boolean getEnForex() {
+        return enForex;
+    }
+
+    public void setEnForex(Boolean enForex) {
+        this.enForex = enForex;
+    }
 
     public Boolean getBotonPorcentajesAplanado() {
         return botonPorcentajesAplanado;

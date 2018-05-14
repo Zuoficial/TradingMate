@@ -2,12 +2,12 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fondo"
     android:layout_width="match_parent"
     android:layout_height="500dp"
     android:layout_centerHorizontal="true"
     android:layout_centerVertical="true"
     android:layout_margin="10dp"
-    android:id="@+id/fondo"
     android:background="@drawable/fondo_marcador_neutral">
 
     <TextView
@@ -78,6 +78,7 @@
         android:layout_marginStart="152dp"
         android:layout_marginTop="132dp"
         android:fontFamily="@font/comforta_regular"
+        android:maxLines="1"
         android:text="9500 USD"
         android:textColor="@android:color/white"
         android:textSize="20dp"
@@ -107,6 +108,7 @@
         android:layout_marginStart="152dp"
         android:layout_marginTop="172dp"
         android:fontFamily="@font/comforta_regular"
+        android:maxLines="1"
         android:text="9500 USD"
         android:textColor="@android:color/white"
         android:textSize="20dp"
@@ -130,7 +132,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-
         android:id="@+id/textoInversion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -138,6 +139,7 @@
         android:layout_marginStart="152dp"
         android:layout_marginTop="212dp"
         android:fontFamily="@font/comforta_regular"
+        android:maxLines="1"
         android:text="1500 USD"
         android:textColor="@android:color/white"
         android:textSize="20dp"
@@ -166,12 +168,12 @@
         android:layout_marginStart="152dp"
         android:layout_marginTop="248dp"
         android:fontFamily="@font/comforta_regular"
+        android:maxLines="1"
         android:text="+ 54 USD"
         android:textColor="@android:color/white"
         android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
 
     <TextView
@@ -196,6 +198,7 @@
         android:layout_marginStart="152dp"
         android:layout_marginTop="288dp"
         android:fontFamily="@font/comforta_regular"
+        android:maxLines="1"
         android:text="1554 USD"
         android:textColor="@android:color/white"
         android:textSize="20dp"
@@ -224,12 +227,12 @@
         android:layout_marginStart="152dp"
         android:layout_marginTop="328dp"
         android:fontFamily="@font/comforta_regular"
+        android:maxLines="1"
         android:text="+ 54 USD"
         android:textColor="@android:color/white"
         android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
 
     <TextView
@@ -254,6 +257,7 @@
         android:layout_marginStart="152dp"
         android:layout_marginTop="368dp"
         android:fontFamily="@font/comforta_regular"
+        android:maxLines="1"
         android:text="+ 54 USD"
         android:textColor="@android:color/white"
         android:textSize="20dp"
@@ -282,6 +286,7 @@
         android:layout_marginStart="152dp"
         android:layout_marginTop="408dp"
         android:fontFamily="@font/comforta_regular"
+        android:maxLines="1"
         android:text="1554 USD"
         android:textColor="@android:color/white"
         android:textSize="20dp"
@@ -311,6 +316,7 @@
         android:layout_marginStart="152dp"
         android:layout_marginTop="448dp"
         android:fontFamily="@font/comforta_regular"
+        android:maxLines="1"
         android:text="0.10504487 BTC"
         android:textColor="@android:color/white"
         android:textSize="20dp"

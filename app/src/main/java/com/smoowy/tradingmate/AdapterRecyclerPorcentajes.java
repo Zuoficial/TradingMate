@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.TreeMap;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+
 public class AdapterRecyclerPorcentajes extends
         RecyclerView.Adapter<AdapterRecyclerPorcentajes.Holder> {
 
@@ -33,33 +36,57 @@ public class AdapterRecyclerPorcentajes extends
             precio, precioFinal, porcentajeMostrar, invertidoActual,
             porcentaje, liquidezOrigen, liquidezDestino, liquidez,
             comisionEntrada, comisionSalida;
-    boolean modoComprar;
+    boolean modoComprar, enForex;
     String monedaOrigenNombre, monedaDestinoNombre;
     Context context;
-    String precisionOrigen, precisionDestino, liquidezNombre;
+    String precisionOrigen, precisionDestino, liquidezNombre, precisionLiquidez;
     final int modoCazar = 0, modoCorta = 1, modoLarga = 2;
 
 
-    public AdapterRecyclerPorcentajes(Context context, Bundle bundle) {
+    public AdapterRecyclerPorcentajes(Context context, DB db) {
         this.context = context;
         mInflater = LayoutInflater.from(context);
-        comisionEntrada = bundle.getDouble("comisionEntrada");
-        comisionSalida = bundle.getDouble("comisionSalida");
-        invertido = bundle.getDouble("invertido");
-        invertidoFinal = invertido;
-        precio = bundle.getDouble("precio");
-        invertidoDestino = (invertido / precio);
-        liquidezOrigen = bundle.getDouble("liquidezOrigen");
-        liquidezDestino = bundle.getDouble("liquidezDestino");
-        monedaOrigenNombre = bundle.getString("monedaOrigenNombre");
-        monedaDestinoNombre = bundle.getString("monedaDestinoNombre");
-        precisionOrigen = bundle.getString("precisionOrigen");
-        precisionDestino = bundle.getString("precisionDestino");
-        liquidezNombre = bundle.getString("liquidezNombre");
-        modo = bundle.getInt("modo");
+        accederDB(db);
         porcentaje = .01;
         hacerListas(modo, porcentaje);
         ajustadorPorcentajes = 1;
+
+    }
+
+
+    Realm realm;
+    DB db;
+
+    private void accederDB(DB db) {
+        monedaOrigenNombre = db.getMonedaOrigen();
+        monedaDestinoNombre = db.getMonedaDestino();
+        liquidezNombre = db.getLiquidezNombre();
+        invertido = Double.parseDouble(db.getInversionInicio());
+        precio = Double.parseDouble(db.getPrecioIn());
+        if (db.getEnForex() != null) {
+            if (db.getEnForex()) {
+                enForex = true;
+
+                comisionEntrada = Double.parseDouble(db.getComisionEntrada()) / 10000;
+                comisionSalida = Double.parseDouble(db.getComisionSalida()) / 10000;
+
+
+            } else {
+
+                comisionEntrada = Double.parseDouble(db.getComisionEntrada()) / 100;
+                comisionSalida = Double.parseDouble(db.getComisionSalida()) / 100;
+            }
+        }
+        modo = db.getModo();
+        precisionOrigen = db.getPrecisionOrigenFormato().replace(".", ",.");
+        precisionDestino = db.getPrecisionDestinoFormato().replace(".", ",.");
+        liquidezOrigen = Double.parseDouble(db.getLiquidezOrigen());
+        liquidezDestino = Double.parseDouble(db.getLiquidezDestino());
+        liquidezNombre = db.getLiquidezNombre();
+        precisionLiquidez = db.getPrecisionLiquidezFormato().replace(".", ",.");
+        modo = db.getModo();
+        invertidoFinal = invertido;
+        invertidoDestino = (invertido / precio);
 
     }
 
@@ -94,7 +121,6 @@ public class AdapterRecyclerPorcentajes extends
 
         Informacion info = tablaInformacion.get(position);
 
-        holder.textoGanancia.setText(info.getGananciaFinal());
         holder.textoPorcentaje.setText(info.getPorcentajeFinal());
         holder.textoPrecio.setText(info.getPrecioFinal());
         holder.textoActual.setText(info.getActualFinal());
@@ -102,9 +128,11 @@ public class AdapterRecyclerPorcentajes extends
 
 
         if (info.getGananciaFinal().contains("+")) {
+            holder.textoGanancia.setText(info.getGananciaFinal().substring(1));
             holder.textoGanadoLetra.setText("Ganado");
             holder.textoPorcentaje.setTextColor(Color.parseColor("#45c042"));
         } else {
+            holder.textoGanancia.setText(info.getGananciaFinal().substring(1));
             holder.textoGanadoLetra.setText("Perdido");
             holder.textoPorcentaje.setTextColor(Color.parseColor("#e53935"));
 
@@ -161,7 +189,7 @@ public class AdapterRecyclerPorcentajes extends
                     info.setGananciaFinal("+" + String.format(precisionDestino, ganancia) + " " + monedaDestinoNombre);
                     info.setActualFinal(String.format(precisionDestino, invertidoActual) + " " + monedaDestinoNombre);
                     liquidez = invertidoActual * liquidezDestino;
-                    info.setLiquidezFinal(String.format("%.2f", liquidez) + " " + liquidezNombre);
+                    info.setLiquidezFinal(String.format(precisionLiquidez, liquidez) + " " + liquidezNombre);
                     info.setPorcentajeFinal("+" + String.format("%.2f", porcentajeMostrar) + "%");
 
 
@@ -172,7 +200,7 @@ public class AdapterRecyclerPorcentajes extends
                     info.setGananciaFinal("+" + String.format(precisionOrigen, ganancia) + " " + monedaOrigenNombre);
                     info.setActualFinal(String.format(precisionOrigen, invertidoActual) + " " + monedaOrigenNombre);
                     liquidez = invertidoActual * liquidezOrigen;
-                    info.setLiquidezFinal(String.format("%.2f", liquidez) + " " + liquidezNombre);
+                    info.setLiquidezFinal(String.format(precisionLiquidez, liquidez) + " " + liquidezNombre);
                     info.setPorcentajeFinal("+" + String.format("%.2f", porcentajeMostrar) + "%");
                 }
 
@@ -210,7 +238,7 @@ public class AdapterRecyclerPorcentajes extends
                     info.setGananciaFinal(String.format(precisionDestino, ganancia) + " " + monedaDestinoNombre);
                     info.setActualFinal(String.format(precisionDestino, invertidoActual) + " " + monedaDestinoNombre);
                     liquidez = invertidoActual * liquidezDestino;
-                    info.setLiquidezFinal(String.format("%.2f", liquidez) + " " + liquidezNombre);
+                    info.setLiquidezFinal(String.format(precisionLiquidez, liquidez) + " " + liquidezNombre);
 
                 } else if (modo == modoLarga || modo == modoCorta) {
 
@@ -219,7 +247,7 @@ public class AdapterRecyclerPorcentajes extends
                     info.setGananciaFinal(String.format(precisionOrigen, ganancia) + " " + monedaOrigenNombre);
                     info.setActualFinal(String.format(precisionOrigen, invertidoActual) + " " + monedaOrigenNombre);
                     liquidez = invertidoActual * liquidezOrigen;
-                    info.setLiquidezFinal(String.format("%.2f", liquidez) + " " + liquidezNombre);
+                    info.setLiquidezFinal(String.format(precisionLiquidez, liquidez) + " " + liquidezNombre);
                 }
 
                 info.setPorcentajeFinal(String.format("%.2f", porcentajeMostrar) + "%");
@@ -243,18 +271,35 @@ public class AdapterRecyclerPorcentajes extends
 
         } else if (modo == modoCorta) {
 
-            a = invertidoDestino * (1 + porcentaje);
-            a *= (1 + comisionSalida);
-            a += (invertidoDestino * comisionEntrada);
 
-            precio = invertidoFinal / a;
+            if (enForex) {
+                precio -= comisionEntrada;
+                precio *= (1 - porcentaje);
+                precio -= comisionSalida;
+            } else {
+                a = invertidoDestino * (1 + porcentaje);
+                a *= (1 + comisionSalida);
+                a += (invertidoDestino * comisionEntrada);
+                precio = invertidoFinal / a;
+            }
+
+
         } else if (modo == modoLarga) {
 
-            b = invertido * (1 + porcentaje);
-            b *= (1 + comisionSalida);
-            b += (invertido * comisionEntrada);
 
-            precio = b / invertidoDestino;
+            if (enForex) {
+
+                precio += comisionEntrada;
+                precio *= (1 + porcentaje);
+                precio += comisionSalida;
+
+
+            } else {
+                b = invertido * (1 + porcentaje);
+                b *= (1 + comisionSalida);
+                b += (invertido * comisionEntrada);
+                precio = b / invertidoDestino;
+            }
 
         }
 
@@ -270,18 +315,36 @@ public class AdapterRecyclerPorcentajes extends
             precio = invertidoFinal / precio;
         } else if (modo == modoCorta) {
 
-            a = invertidoDestino * (1 - porcentaje);
-            a *= (1 + comisionSalida);
-            a += (invertidoDestino * comisionEntrada);
+            if (enForex) {
 
-            precio = invertidoFinal / a;
+                precio -= comisionEntrada;
+                precio *= (1 + porcentaje);
+                precio -= comisionSalida;
+
+
+            } else {
+
+                a = invertidoDestino * (1 - porcentaje);
+                a *= (1 + comisionSalida);
+                a += (invertidoDestino * comisionEntrada);
+                precio = invertidoFinal / a;
+            }
         } else if (modo == modoLarga) {
 
-            b = invertido * (1 - porcentaje);
-            b *= (1 + comisionSalida);
-            b += (invertido * comisionEntrada);
+            if (enForex) {
 
-            precio = b / invertidoDestino;
+                precio += comisionEntrada;
+                precio *= (1 - porcentaje);
+                precio += comisionSalida;
+
+
+            } else {
+
+                b = invertido * (1 - porcentaje);
+                b *= (1 + comisionSalida);
+                b += (invertido * comisionEntrada);
+                precio = b / invertidoDestino;
+            }
 
         }
 

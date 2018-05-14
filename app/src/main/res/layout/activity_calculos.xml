@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/fondo_dia"
+    android:background="@color/fondoPrincipal"
     tools:context="com.smoowy.tradingmate.Calculos">
 
     <RelativeLayout
@@ -24,8 +24,6 @@
             android:textAllCaps="true"
             android:textColor="@android:color/white"
             android:textSize="28dp" />
-
-
 
 
         <android.support.v7.widget.RecyclerView
@@ -127,7 +125,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:fontFamily="@font/comfortaa_light"
+                android:fontFamily="@font/comforta_regular"
                 android:text="Final"
                 android:textColor="@android:color/white"
                 android:textSize="35dp" />
@@ -182,7 +180,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="110dp"
+                android:layout_marginTop="105dp"
                 android:fontFamily="@font/comforta_bold"
                 android:hint="Precio"
                 android:inputType="numberDecimal"
@@ -215,7 +213,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="220dp"
                 android:layout_marginLeft="130dp"
-                android:layout_marginRight="22dp"
+                android:layout_marginRight="10dp"
                 android:fontFamily="@font/comforta_regular"
                 android:maxLines="1"
                 android:text="0.00251515 BTC"
@@ -245,7 +243,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="178dp"
                 android:layout_marginLeft="130dp"
-                android:layout_marginRight="22dp"
+                android:layout_marginRight="10dp"
                 android:fontFamily="@font/comforta_regular"
                 android:maxLines="1"
                 android:text="0.00251515 BTC"
@@ -274,7 +272,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="138dp"
                 android:layout_marginLeft="130dp"
-                android:layout_marginRight="22dp"
+                android:layout_marginRight="10dp"
                 android:fontFamily="@font/comforta_regular"
                 android:maxLines="1"
                 android:text="+0.00"
@@ -304,7 +302,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="98dp"
                 android:layout_marginLeft="130dp"
-                android:layout_marginRight="22dp"
+                android:layout_marginRight="10dp"
                 android:fontFamily="@font/comforta_regular"
                 android:maxLines="1"
                 android:text="0.00312545 BTC"
@@ -334,7 +332,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="58dp"
                 android:layout_marginLeft="130dp"
-                android:layout_marginRight="22dp"
+                android:layout_marginRight="10dp"
                 android:fontFamily="@font/comforta_regular"
                 android:maxLines="1"
                 android:text="0.00312545 WTC"
@@ -363,7 +361,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="18dp"
                 android:layout_marginLeft="130dp"
-                android:layout_marginRight="22dp"
+                android:layout_marginRight="10dp"
                 android:fontFamily="@font/comforta_regular"
                 android:maxLines="1"
                 android:text="0.00312545 WTC"
@@ -381,16 +379,15 @@
 
             <Button
                 android:id="@+id/botonGuardar"
+                style="@style/boton"
                 android:layout_width="142dp"
                 android:layout_height="54dp"
-                android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
-                android:text="Guardar "
-                android:textSize="20dp"
+                android:layout_centerVertical="true"
                 android:layout_marginTop="20dp"
-                style="@style/boton"
-                android:fontFamily="@font/comforta_bold"/>
-
+                android:fontFamily="@font/comforta_bold"
+                android:text="Guardar "
+                android:textSize="20dp" />
 
 
         </RelativeLayout>

@@ -53,7 +53,7 @@ public class AdapterRecyclerPosiciones extends RecyclerView.Adapter<AdapterRecyc
         }
         holder.textoParidad.setText(db.getMonedaDestino() + " con " + db.getMonedaOrigen());
 
-        String precisionOrigenFormato = db.getPrecisionOrigenFormato().replace(".",",.");
+        String precisionOrigenFormato = db.getPrecisionOrigenFormato().replace(".", ",.");
 
         if (db.getPrecioIn() == null)
             holder.textoPrecioIn.setText("Pendiente");
@@ -77,8 +77,15 @@ public class AdapterRecyclerPosiciones extends RecyclerView.Adapter<AdapterRecyc
 
         if (db.getInversionInicio() == null)
             holder.textoInversion.setText("Pendiente");
-        else
-            holder.textoInversion.setText(db.getInversionInicio() + " " + db.getMonedaOrigen());
+        else {
+
+            double a = Double.parseDouble(db.getInversionInicio());
+
+            holder.textoInversion.setText(String.format(precisionOrigenFormato, a) + " " + db.getMonedaOrigen());
+
+
+        }
+
 
 
         if (db.getGanadoInicio() == null)
@@ -119,7 +126,7 @@ public class AdapterRecyclerPosiciones extends RecyclerView.Adapter<AdapterRecyc
 
         if (db.liquidezOrigen != null || db.getInvertido() != null || db.getGanadoInicio() != null) {
 
-            String precisionLiquidezFormato = db.getPrecisionLiquidezFormato().replace(".",",.");
+            String precisionLiquidezFormato = db.getPrecisionLiquidezFormato().replace(".", ",.");
 
             double inversion = Double.parseDouble(db.getInversionInicio());
             double ganado = Double.parseDouble(db.getGanadoInicio());
@@ -139,7 +146,7 @@ public class AdapterRecyclerPosiciones extends RecyclerView.Adapter<AdapterRecyc
                 ganado *= -1;
 
             } else
-                holder.textoGanadoLetra.setText("Ganado");
+                holder.textoGanadoLiqLetra.setText("Ganado");
 
 
             holder.textoGanadoLiq.setText(String.format(precisionLiquidezFormato, ganado) + " " + db.getLiquidezNombre());
@@ -156,7 +163,7 @@ public class AdapterRecyclerPosiciones extends RecyclerView.Adapter<AdapterRecyc
         if (db.getUsando() == null)
             holder.textoUsando.setText("Pendiente");
         else
-            holder.textoUsando.setText(db.getUsando());
+            holder.textoUsando.setText(db.getUsando() + " " + db.getMonedaDestino());
 
 
     }
@@ -170,7 +177,7 @@ public class AdapterRecyclerPosiciones extends RecyclerView.Adapter<AdapterRecyc
 
     void irTransaccion(Integer position) {
 
-        Intent intent = new Intent(context, MainActivity.class);
+        Intent intent = new Intent(context, Calculos.class);
         intent.putExtra("idOperacion", listaDatos.get(position).getId());
         context.startActivity(intent);
     }

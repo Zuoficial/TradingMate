@@ -182,6 +182,7 @@
 
 
     <TextView
+        android:id="@+id/comisionEntradaLetra"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="35dp"
@@ -215,6 +216,8 @@
 
 
     <TextView
+
+        android:id="@+id/comisionSalidaLetra"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="35dp"
@@ -264,11 +267,24 @@
         android:id="@+id/botonAgregarInversion"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:layout_marginBottom="328dp"
+        android:layout_marginBottom="348dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/fondo_marcador_neutral"
         android:fontFamily="@font/comforta_bold"
         android:text="Agregar"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/botonForex"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginBottom="298dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/fondo_marcador_neutral"
+        android:fontFamily="@font/comforta_bold"
+        android:text="Forex"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -355,7 +371,7 @@
         android:layout_marginTop="335dp"
         android:background="@android:color/transparent"
         android:gravity="center_horizontal"
-        android:hint="USD"
+        android:hint="NOM"
         android:selectAllOnFocus="true"
         android:textAlignment="center"
         android:textColor="@android:color/white"

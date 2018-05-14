@@ -34,7 +34,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
     Button botonCazar, botonCorta, botonLarga, botonClear, botonPorcentajes,
             botonCerrar, botonPorcentajeCalculador,
             botonPorcentajeCalculadorMenos, botonPorcentajeCalculadorMas,
-            botonGuardar;
+            botonGuardar, botonModificar;
     TextView encabezado, textoGanancia, textoInvertido, textoInvertidoActual, textoUsado, textoGananciaLetra,
             textoPorcentaje, textoPrecio, textoBase, textoLiquidez;
     String monedaOrigenNombre, monedaDestinoNombre;
@@ -46,7 +46,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
     int ajustadorPorcentajes, modo, idOperacion;
     final int modoCazar = 0, modoCorta = 1, modoLarga = 2;
     boolean botonPorcentajesAplanado,
-            botonporcentajeCalculadorAplanado, botonPorcentajeCalculadorMasAplanado;
+            botonporcentajeCalculadorAplanado, botonPorcentajeCalculadorMasAplanado, enForex;
     Vibrator vibrator;
     String precisionOrigen, precisionDestino, precisionLiquidez,
             liquidezNombre;
@@ -61,25 +61,8 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         encabezado = findViewById(R.id.encabezado);
         encabezado.setOnTouchListener(onTouchListener);
         calculador = findViewById(R.id.calculador);
-        /*
-        monedaOrigenNombre = getIntent().getExtras().getString("monedaOrigenNombre");
-        monedaDestinoNombre = getIntent().getExtras().getString("monedaDestinoNombre");
-        liquidezNombre = getIntent().getExtras().getString("liquidezNombre");
-        invertido = getIntent().getExtras().getDouble("invertido");
-        precio = getIntent().getExtras().getDouble("precio");
-        comisionEntrada = (getIntent().getExtras().getDouble("comisionEntrada")) / 100;
-        comisionSalida = (getIntent().getExtras().getDouble("comisionSalida")) / 100;
-        modo = getIntent().getExtras().getInt("modo");
-        botonPorcentajesAplanado = getIntent().getExtras().getBoolean("botonPorcentajesAplanado");
-        precisionOrigen = getIntent().getExtras().getString("precisionOrigen");
-        precisionDestino = getIntent().getExtras().getString("precisionDestino");
-        liquidezOrigen = getIntent().getExtras().getDouble("liquidezOrigen");
-        liquidezDestino = getIntent().getExtras().getDouble("liquidezDestino");
-    */
         accederDB();
-        precisionLiquidez = "%.2f";
         invertidoFinal = invertido;
-        invertidoDestino = (invertido / precio);
         botonporcentajeCalculadorAplanado = false;
         botonPorcentajeCalculadorMasAplanado = true;
         setRecyclerViewRecyclerBotonesPorcentajes();
@@ -94,6 +77,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         botonPorcentajeCalculadorMas = findViewById(R.id.botonPorcentajeCalculadorMas);
         botonPorcentajeCalculadorMenos = findViewById(R.id.botonPorcentajeCalculadorMenos);
         botonGuardar = findViewById(R.id.botonGuardar);
+        botonModificar = findViewById(R.id.botonModificar);
         botonCazar.setOnTouchListener(onTouchListener);
         botonCorta.setOnTouchListener(onTouchListener);
         botonLarga.setOnTouchListener(onTouchListener);
@@ -104,6 +88,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         botonPorcentajeCalculadorMas.setOnTouchListener(onTouchListener);
         botonPorcentajeCalculadorMenos.setOnTouchListener(onTouchListener);
         botonGuardar.setOnTouchListener(onTouchListener);
+        botonModificar.setOnTouchListener(onTouchListener);
         textoPorcentaje = findViewById(R.id.textoPorcentaje);
         textoPorcentajeMod = findViewById(R.id.textoPorcentajeMod);
         textoPorcentajeMod.addTextChangedListener(textWatcher);
@@ -139,6 +124,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         setBotonPorcentajesAplanado();
         ajustadorPorcentajes = 1;
         ajustadorPosicion(ajustadorPorcentajes);
+        textoPrecioMod.setText(db.getPrecioOut());
         textoPrecioMod.clearFocus();
 
     }
@@ -157,15 +143,31 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         liquidezNombre = db.getLiquidezNombre();
         invertido = Double.parseDouble(db.getInversionInicio());
         precio = Double.parseDouble(db.getPrecioIn());
-        comisionEntrada = Double.parseDouble(db.getComisionEntrada()) / 100;
-        comisionSalida = Double.parseDouble(db.getComisionSalida()) / 100;
+        invertidoDestino = Double.parseDouble(db.getUsando());
+
+        if (db.getEnForex() != null) {
+            if (db.getEnForex()) {
+                enForex = true;
+
+                comisionEntrada = Double.parseDouble(db.getComisionEntrada()) / 10000;
+                comisionSalida = Double.parseDouble(db.getComisionSalida()) / 10000;
+
+
+            } else {
+
+                comisionEntrada = Double.parseDouble(db.getComisionEntrada()) / 100;
+                comisionSalida = Double.parseDouble(db.getComisionSalida()) / 100;
+            }
+        }
+
+
         modo = db.getModo();
         botonPorcentajesAplanado = db.getBotonPorcentajesAplanado();
-        precisionOrigen = db.getPrecisionOrigen();
-        precisionDestino = db.getPrecisionDestino();
+        precisionOrigen = db.getPrecisionOrigenFormato().replace(".", ",.");
+        precisionDestino = db.getPrecisionDestinoFormato().replace(".", ",.");
+        precisionLiquidez = db.getPrecisionLiquidezFormato().replace(".", ",.");
         liquidezOrigen = Double.parseDouble(db.getLiquidezOrigen());
         liquidezDestino = Double.parseDouble(db.getLiquidezDestino());
-
 
     }
 
@@ -189,9 +191,9 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                         ) {
 
                     if (modo == modoCorta || modo == modoLarga)
-                        textoGanancia.setText("+0.00 " + monedaOrigenNombre);
+                        textoGanancia.setText("0.00 " + monedaOrigenNombre);
                     else
-                        textoGanancia.setText("+0.00 " + monedaDestinoNombre);
+                        textoGanancia.setText("0.00 " + monedaDestinoNombre);
                     return;
                 }
 
@@ -202,9 +204,9 @@ public class Calculos extends AppCompatActivity implements Comunicador {
 
                     textoPorcentaje.setText("+0.00%");
                     if (modo == modoCorta || modo == modoLarga)
-                        textoGanancia.setText("+0.00 " + monedaOrigenNombre);
+                        textoGanancia.setText("0.00 " + monedaOrigenNombre);
                     else
-                        textoGanancia.setText("+0.00 " + monedaDestinoNombre);
+                        textoGanancia.setText("0.00 " + monedaDestinoNombre);
                     return;
                 }
             }
@@ -235,7 +237,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                     textoGananciaLetra.setText("Ganado");
                 } else {
                     textoGanadoGuardar = String.format(precisionOrigen, gananciaFinal);
-                    textoGanancia.setText(textoGanadoGuardar + " " + monedaOrigenNombre);
+                    textoGanancia.setText(textoGanadoGuardar.substring(1) + " " + monedaOrigenNombre);
                     textoPorcentaje.setText(String.format("%.2f", porcentajeFinal) + "%");
                     textoGananciaLetra.setText("Perdido");
 
@@ -263,7 +265,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
 
                 } else {
                     textoGanadoGuardar = String.format(precisionDestino, gananciaFinal);
-                    textoGanancia.setText(textoGanadoGuardar + " " + monedaDestinoNombre);
+                    textoGanancia.setText(textoGanadoGuardar.substring(1) + " " + monedaDestinoNombre);
                     textoPorcentaje.setText(String.format("%.2f", porcentajeFinal) + "%");
                     textoGananciaLetra.setText("Perdido");
                 }
@@ -304,9 +306,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
             gananciaFinal = invertidoActual - invertidoDestino;
 
 
-        } else
-
-        {
+        } else {
 
             invertidoActual = invertidoFinal / precioIngresado;
             gananciaFinal = invertidoActual - invertidoDestino;
@@ -335,32 +335,51 @@ public class Calculos extends AppCompatActivity implements Comunicador {
             porcentajeIngresado /= 100;
 
 
-            double a;
+            if (enForex) {
 
-            a = invertidoDestino * (1 + porcentajeIngresado);
-            resultadoComisionSalida = a * comisionSalida;
-            resultadoComisionEntrada = invertidoDestino * comisionEntrada;
-            a += resultadoComisionSalida + resultadoComisionEntrada;
+                precioFinal = precio - comisionEntrada;
+                precioFinal *= 1 - porcentajeIngresado;
+                precioFinal -= comisionSalida;
 
-            precioFinal = invertido / a;
+
+            } else {
+
+                double a;
+                a = invertidoDestino * (1 + porcentajeIngresado);
+                resultadoComisionSalida = a * comisionSalida;
+                resultadoComisionEntrada = invertidoDestino * comisionEntrada;
+                a += resultadoComisionSalida + resultadoComisionEntrada;
+                precioFinal = invertido / a;
+            }
+
+
             invertidoActual = invertido * (1 + porcentajeIngresado);
             gananciaFinal = invertidoActual - invertidoFinal;
 
 
         } else {
 
+            if (enForex) {
 
-            double a;
-
-            a = invertido / precioIngresado;
-            resultadoComisionEntrada = invertidoDestino * comisionEntrada;
-            a -= resultadoComisionEntrada;
-            a /= 1 + comisionSalida;
-            resultadoComisionSalida = a * comisionSalida;
+                double x = precioIngresado + comisionSalida;
+                double y = precio - comisionEntrada;
+                porcentajeFinal = x / y;
+                porcentajeFinal -= 1;
+                porcentajeFinal *= -1;
 
 
-            porcentajeFinal = a / invertidoDestino;
-            porcentajeFinal -= 1;
+            } else {
+
+                double a;
+                a = invertido / precioIngresado;
+                a -= invertidoDestino * comisionEntrada;
+                a /= 1 + comisionSalida;
+                porcentajeFinal = a / invertidoDestino;
+                porcentajeFinal -= 1;
+
+            }
+
+
             invertidoActual = invertido * (1 + porcentajeFinal);
             gananciaFinal = invertidoActual - invertidoFinal;
             porcentajeFinal *= 100;
@@ -384,32 +403,50 @@ public class Calculos extends AppCompatActivity implements Comunicador {
             porcentajeIngresado /= 100;
 
 
-            double a;
+            if (enForex) {
 
-            a = invertido * (1 + porcentajeIngresado);
-            a *= (1 + comisionSalida);
-            a += (invertido * comisionEntrada);
+                precioFinal = precio + comisionEntrada;
+                precioFinal *= 1 + porcentajeIngresado;
+                precioFinal += comisionSalida;
 
-            precioFinal = a / invertidoDestino;
+
+            } else {
+                double a;
+                a = invertido * (1 + porcentajeIngresado);
+                a *= (1 + comisionSalida);
+                a += (invertido * comisionEntrada);
+                precioFinal = a / invertidoDestino;
+            }
+
+
             invertidoActual = invertido * (1 + porcentajeIngresado);
             gananciaFinal = invertidoActual - invertidoFinal;
 
 
         } else {
 
+            if (enForex) {
 
-            double a = invertidoDestino;
-            a *= precioIngresado;
-            a -= invertido * comisionEntrada;
-            a /= 1 + comisionSalida;
+                double x = precioIngresado - comisionSalida;
+                double y = precio + comisionEntrada;
+                porcentajeFinal = x / y;
+                porcentajeFinal -= 1;
 
-            porcentajeFinal = a / invertido;
-            porcentajeFinal -= 1;
+
+            } else {
+
+                double a = invertidoDestino;
+                a *= precioIngresado;
+                a -= invertido * comisionEntrada;
+                a /= 1 + comisionSalida;
+                porcentajeFinal = a / invertido;
+                porcentajeFinal -= 1;
+
+            }
+
             invertidoActual = invertido * (1 + (porcentajeFinal));
             gananciaFinal = invertidoActual - invertidoFinal;
             porcentajeFinal *= 100;
-
-
             positivo = gananciaFinal > 0;
 
 
@@ -519,11 +556,11 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                     }
 
                     case R.id.botonCerrar: {
-
-                        Intent data = new Intent();
-                        data.putExtra("salir", true);
-
-                        setResult(1, data);
+                        Intent i = getBaseContext().getPackageManager().
+                                getLaunchIntentForPackage(getBaseContext().getPackageName());
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(i);
                         vibrator.vibrate(500);
                         finish();
 
@@ -625,6 +662,17 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                         break;
                     }
 
+                    case R.id.botonModificar: {
+                        drawer.closeDrawer(Gravity.START);
+                        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        i.putExtra("idOperacion", idOperacion);
+                        startActivity(i);
+                        //finish();
+
+                    }
+
                 }
 
             }
@@ -648,11 +696,10 @@ public class Calculos extends AppCompatActivity implements Comunicador {
             @Override
             public void execute(Realm realm) {
 
-                db.setPrecioOut(textoPrecioMod.getText().toString());
-                db.setGanadoInicio(textoGanadoGuardar);
-                db.setActualInicio(textoActualGuardar);
-                db.setUsando(textoUsado.getText().toString());
-                db.setBotonPorcentajesAplanado(botonPorcentajesAplanado);
+                db.setPrecioOut(textoPrecioMod.getText().toString().replace(",", ""));
+                db.setGanadoInicio(textoGanadoGuardar.replace(",", ""));
+                db.setActualInicio(textoActualGuardar.replace(",", ""));
+                db.setBotonPorcentajesAplanado(!botonPorcentajesAplanado);
                 db.setModo(modo);
 
             }
@@ -769,14 +816,14 @@ public class Calculos extends AppCompatActivity implements Comunicador {
         encabezado.setText("larga " + monedaDestinoNombre + " con " + monedaOrigenNombre);
         if (modo == modoCorta || modo == modoLarga) {
 
-            textoGanancia.setText("+0.00 " + monedaOrigenNombre);
+            textoGanancia.setText("0.00 " + monedaOrigenNombre);
             textoInvertido.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
             textoInvertidoActual.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
             textoUsado.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
 
         } else {
 
-            textoGanancia.setText("+0.00 " + monedaDestinoNombre);
+            textoGanancia.setText("0.00 " + monedaDestinoNombre);
             textoInvertido.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
             textoInvertidoActual.setText(String.format(precisionDestino, invertidoDestino) + " " + monedaDestinoNombre);
             textoUsado.setText(String.format(precisionOrigen, invertido) + " " + monedaOrigenNombre);
@@ -814,22 +861,7 @@ public class Calculos extends AppCompatActivity implements Comunicador {
 
     private void setRecyclerViewRecyclerPorcentajes() {
         recyclerPorcentajes = findViewById(R.id.recyclerCambioDePorcentajes);
-
-        Bundle bundle = new Bundle();
-        bundle.putString("monedaOrigenNombre", monedaOrigenNombre);
-        bundle.putString("monedaDestinoNombre", monedaDestinoNombre);
-        bundle.putDouble("invertido", invertido);
-        bundle.putDouble("precio", precio);
-        bundle.putDouble("comisionEntrada", comisionEntrada);
-        bundle.putDouble("comisionSalida", comisionSalida);
-        bundle.putDouble("liquidezOrigen", liquidezOrigen);
-        bundle.putDouble("liquidezDestino", liquidezDestino);
-        bundle.putInt("modo", modo);
-        bundle.putString("precisionOrigen", precisionOrigen);
-        bundle.putString("precisionDestino", precisionDestino);
-        bundle.putString("liquidezNombre", liquidezNombre);
-
-        adapterRecyclerPorcentajes = new AdapterRecyclerPorcentajes(this, bundle);
+        adapterRecyclerPorcentajes = new AdapterRecyclerPorcentajes(this, db);
         recyclerPorcentajes.setAdapter(adapterRecyclerPorcentajes);
         layoutManagerPorcentajes = new LinearLayoutManager(this);
         recyclerPorcentajes.setLayoutManager(layoutManagerPorcentajes);
@@ -878,5 +910,15 @@ public class Calculos extends AppCompatActivity implements Comunicador {
                 break;
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent i = getBaseContext().getPackageManager().
+                getLaunchIntentForPackage(getBaseContext().getPackageName());
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+        super.onBackPressed();
     }
 }
