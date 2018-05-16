@@ -39,7 +39,7 @@ public class AdapterRecyclerPorcentajes extends
     boolean modoComprar, enForex;
     String monedaOrigenNombre, monedaDestinoNombre;
     Context context;
-    String precisionOrigen, precisionDestino, liquidezNombre, precisionLiquidez;
+    String precisionOrigen, precisionDestino, liquidezNombre, precisionLiquidez, precisionPrecio;
     final int modoCazar = 0, modoCorta = 1, modoLarga = 2;
 
 
@@ -84,6 +84,7 @@ public class AdapterRecyclerPorcentajes extends
         liquidezDestino = Double.parseDouble(db.getLiquidezDestino());
         liquidezNombre = db.getLiquidezNombre();
         precisionLiquidez = db.getPrecisionLiquidezFormato().replace(".", ",.");
+        precisionPrecio = db.getPrecisionPrecioFormato().replace(".", ",.");
         modo = db.getModo();
         invertidoFinal = invertido;
         invertidoDestino = (invertido / precio);
@@ -179,7 +180,7 @@ public class AdapterRecyclerPorcentajes extends
 
                 porcentajeMostrar = tablaPorcentajesInvertida.get(i) * 100;
                 precioFinal = positivo(precio, tablaPorcentajesInvertida.get(i));
-                info.setPrecioFinal(String.format(precisionOrigen, precioFinal) + " " + monedaOrigenNombre);
+                info.setPrecioFinal(String.format(precisionPrecio, precioFinal) + " " + monedaOrigenNombre);
 
 
                 if (modo == modoCazar) {
@@ -228,7 +229,7 @@ public class AdapterRecyclerPorcentajes extends
                 porcentajeMostrar *= -1;
                 precioFinal = negativo(
                         precio, tablaPorcentajes.get(iPositivo));
-                info.setPrecioFinal(String.format(precisionOrigen, precioFinal) + " " + monedaOrigenNombre);
+                info.setPrecioFinal(String.format(precisionPrecio, precioFinal) + " " + monedaOrigenNombre);
 
 
                 if (modo == modoCazar) {
@@ -378,7 +379,7 @@ public class AdapterRecyclerPorcentajes extends
             textoUsando.setOnClickListener(onClickListener);
             textoLiquidez.setOnClickListener(onClickListener);
             textoBase.setOnClickListener(onClickListener);
-            textoBase.setText(String.format(precisionOrigen, precio) + " " + monedaOrigenNombre);
+            textoBase.setText(String.format(precisionPrecio, precio) + " " + monedaOrigenNombre);
             // fondo = itemView.findViewById(R.id.fondo);
             vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 

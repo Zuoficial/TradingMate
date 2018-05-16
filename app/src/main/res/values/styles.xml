@@ -9,7 +9,8 @@
         <item name="android:fontFamily">@font/comfortaa_light</item>
     </style>
 
-    <style name="splashScreenTheme" parent="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+    <style name="splashScreenTheme" parent="AppTheme">
+
         <item name="android:windowBackground">@drawable/fondo_like_it</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

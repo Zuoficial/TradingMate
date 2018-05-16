@@ -21,10 +21,10 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main">
 
-        <RelativeLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            >
+            android:id="@+id/constrainlayout">
 
             <Button
                 android:id="@+id/botonModificar"
@@ -35,7 +35,9 @@
                 android:layout_marginTop="180dp"
                 android:fontFamily="@font/comforta_bold"
                 android:text="Modificar"
-                android:textSize="25dp" />
+                android:textSize="25dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
 
             <Button
@@ -47,10 +49,11 @@
                 android:layout_marginTop="240dp"
                 android:fontFamily="@font/comforta_bold"
                 android:text="Porcentajes"
-                android:textSize="25dp" />
+                android:textSize="25dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <Button
-                android:layout_below="@id/botonPorcentajes"
                 android:id="@+id/botonCazar"
                 android:textColor="@android:color/white"
                 android:background="@android:color/transparent"
@@ -59,33 +62,37 @@
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/comforta_bold"
                 android:text="Cazar"
-                android:textSize="25dp" />
+                android:textSize="25dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/botonPorcentajes" />
 
 
             <Button
                 android:id="@+id/botonCorta"
                 android:textColor="@android:color/white"
                 android:background="@android:color/transparent"
-                android:layout_below="@id/botonCazar"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/comforta_bold"
-                android:text="posicion corta"
-                android:textSize="25dp" />
+                android:text="Posicion corta"
+                android:textSize="25dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/botonCazar" />
 
 
             <Button
                 android:id="@+id/botonLarga"
                 android:textColor="@android:color/white"
                 android:background="@android:color/transparent"
-                android:layout_below="@id/botonCorta"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/comforta_bold"
-                android:text="posicion larga"
-                android:textSize="25dp" />
+                android:text="Posicion larga"
+                android:textSize="25dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/botonCorta" />
 
 
 
@@ -95,14 +102,15 @@
                 android:id="@+id/botonCerrar"
                 android:textColor="@android:color/white"
                 android:background="@android:color/transparent"
-                android:layout_below="@+id/botonLarga"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/comforta_bold"
                 android:text="Cerrar"
-                android:textSize="25dp" />
-        </RelativeLayout>
+                android:textSize="25dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/botonLarga" />
+        </android.support.constraint.ConstraintLayout>
 
 
     </android.support.design.widget.NavigationView>

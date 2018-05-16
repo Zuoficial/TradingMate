@@ -44,6 +44,7 @@ public class AdapterRecyclerPosiciones extends RecyclerView.Adapter<AdapterRecyc
             }
             case 1: {
                 holder.textoPosicion.setText("Corta");
+                holder.textoPosicion.setTextColor(context.getColor(R.color.perdida));
                 break;
             }
             case 2: {
@@ -51,16 +52,24 @@ public class AdapterRecyclerPosiciones extends RecyclerView.Adapter<AdapterRecyc
                 break;
             }
         }
+        if (db.getReferencia() != null) {
+            holder.textoReferencia.setText(db.getReferencia());
+        }
+        else
+            holder.textoReferencia.setVisibility(View.GONE);
+
+
         holder.textoParidad.setText(db.getMonedaDestino() + " con " + db.getMonedaOrigen());
 
         String precisionOrigenFormato = db.getPrecisionOrigenFormato().replace(".", ",.");
+        String precisionPrecioFormato = db.getPrecisionPrecioFormato().replace(".",",.");
 
         if (db.getPrecioIn() == null)
             holder.textoPrecioIn.setText("Pendiente");
         else {
 
             double b = Double.parseDouble(db.getPrecioIn());
-            holder.textoPrecioIn.setText(String.format(precisionOrigenFormato, b) + " " + db.getMonedaOrigen());
+            holder.textoPrecioIn.setText(String.format(precisionPrecioFormato, b) + " " + db.getMonedaOrigen());
 
         }
 
@@ -69,7 +78,7 @@ public class AdapterRecyclerPosiciones extends RecyclerView.Adapter<AdapterRecyc
         else {
 
             double b = Double.parseDouble(db.getPrecioOut());
-            holder.textoPrecioOut.setText(String.format(precisionOrigenFormato, b) + " " + db.getMonedaOrigen());
+            holder.textoPrecioOut.setText(String.format(precisionPrecioFormato, b) + " " + db.getMonedaOrigen());
 
 
         }
@@ -85,7 +94,6 @@ public class AdapterRecyclerPosiciones extends RecyclerView.Adapter<AdapterRecyc
 
 
         }
-
 
 
         if (db.getGanadoInicio() == null)
@@ -206,7 +214,7 @@ public class AdapterRecyclerPosiciones extends RecyclerView.Adapter<AdapterRecyc
         TextView textoPosicion, textoParidad, textoPrecioIn, textoPrecioOut,
                 textoInversion, textoGanado, textoGanadoLetra,
                 textoGanadoLiqLetra, textoGanadoLiq,
-                textoActual, textoActualLiq, textoInversionLiq, textoUsando;
+                textoActual, textoActualLiq, textoInversionLiq, textoUsando,textoReferencia;
         View contenedor;
 
         Holder(final View itemView) {
@@ -224,6 +232,7 @@ public class AdapterRecyclerPosiciones extends RecyclerView.Adapter<AdapterRecyc
             textoActualLiq = itemView.findViewById(R.id.textoActualLiq);
             textoGanadoLiqLetra = itemView.findViewById(R.id.textoGanadoLiqLetra);
             textoUsando = itemView.findViewById(R.id.textoUsando);
+            textoReferencia = itemView.findViewById(R.id.referencia);
             contenedor = itemView.findViewById(R.id.fondo);
             contenedor.setOnClickListener(onClickListener);
         }

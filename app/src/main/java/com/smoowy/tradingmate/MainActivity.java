@@ -37,14 +37,15 @@ public class MainActivity extends AppCompatActivity
             botonPorcentajes, botonAgregarInversion, botonCambioInversion, botonForex;
     EditText invertido, precio, comisionEntrada, comisionSalida, monedaOrigen, monedaDestino,
             precisionOrigen, precisionDestino, liquidezOrigen, liquidezDestino,
-            liquidezNombre, precisionLiquidez;
+            liquidezNombre, precisionLiquidez, precisionPrecio;
     TextView encabezadoInversion, comisionEntradaLetra, comisionSalidaLetra;
     int selectorCambioInversion = 0, idOperacion;
     final int cambioInversionOrigen = 0, cambioInversionDestino = 1,
             cambioInversionOrigenLiquidez = 2, cambioInversionDestinoLiquidez = 3;
     boolean botonPorcentajesAplanado, botonAgregarInversionAplanado, enForex;
     String precioIn, inversionInicio, inversionDestinoInicio;
-    String precisionOrigenFormato, precisionDestinoFormato, precisionLiquidezFormato;
+    String precisionOrigenFormato, precisionDestinoFormato, precisionLiquidezFormato,
+            precisionPrecioFormato;
     Vibrator vibrator;
     DrawerLayout drawer;
     RecyclerView recyclerViewInversiones;
@@ -81,6 +82,7 @@ public class MainActivity extends AppCompatActivity
         precisionOrigen = findViewById(R.id.precisionOrigen);
         precisionDestino = findViewById(R.id.precisionDestino);
         precisionLiquidez = findViewById(R.id.precisionLiquidez);
+        precisionPrecio = findViewById(R.id.precisionPrecio);
         botonCazar.setOnTouchListener(onTouchListener);
         botonCorta.setOnTouchListener(onTouchListener);
         botonLarga.setOnTouchListener(onTouchListener);
@@ -184,6 +186,7 @@ public class MainActivity extends AppCompatActivity
         precisionDestino.setText(db.getPrecisionDestino());
         liquidezNombre.setText(db.getLiquidezNombre());
         precisionLiquidez.setText(db.getPrecisionLiquidez());
+        precisionPrecio.setText(db.getPrecisionPrecio());
         adapterRecyclerInversiones.monedaOrigen = db.getMonedaOrigen();
         adapterRecyclerInversiones.monedaDestino = db.getMonedaDestino();
         adapterRecyclerInversiones.lista.addAll(db.operaciones);
@@ -241,6 +244,8 @@ public class MainActivity extends AppCompatActivity
                 db.setPrecisionDestinoFormato(precisionDestinoFormato);
                 db.setPrecisionLiquidez(precisionLiquidez.getText().toString());
                 db.setPrecisionLiquidezFormato(precisionLiquidezFormato);
+                db.setPrecisionPrecio(precisionPrecio.getText().toString());
+                db.setPrecisionPrecioFormato(precisionPrecioFormato);
                 db.setBotonPorcentajesAplanado(botonPorcentajesAplanado);
                 db.setGanadoInicio(String.valueOf(0));
 
@@ -551,8 +556,16 @@ public class MainActivity extends AppCompatActivity
         } else {
 
             precisionLiquidezFormato = "%." + precisionLiquidez.getText().toString() + "f";
+        }
+
+        if (precisionPrecio.getText().toString().isEmpty()) {
+
+            precisionPrecioFormato = precisionOrigenFormato;
 
 
+        } else {
+
+            precisionPrecioFormato = "%." + precisionPrecio.getText().toString() + "f";
         }
 
 

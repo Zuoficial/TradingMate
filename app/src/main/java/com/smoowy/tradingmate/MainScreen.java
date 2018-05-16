@@ -1,5 +1,6 @@
 package com.smoowy.tradingmate;
 
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -23,7 +24,9 @@ public class MainScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.AppTheme_NoActionBar);
+    //    setTheme(R.style.AppTheme_NoActionBar);
+        ActivityManager.TaskDescription taskDesc = new ActivityManager.TaskDescription(null, null, getColor(R.color.colorPrimary));
+        setTaskDescription(taskDesc);
         setContentView(R.layout.activity_main_screen);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -179,6 +182,7 @@ public class MainScreen extends AppCompatActivity {
 
             }
         });
+        realm.close();
 
         super.onDestroy();
     }

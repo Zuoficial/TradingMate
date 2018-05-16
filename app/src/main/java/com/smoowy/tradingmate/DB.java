@@ -17,6 +17,7 @@ public class DB extends RealmObject {
     String precisionOrigen;
     String precisionDestino;
     String precisionLiquidez;
+    String precisionPrecio;
     String liquidezOrigen;
     String liquidezDestino;
     String liquidezNombre;
@@ -31,11 +32,39 @@ public class DB extends RealmObject {
     String precisionOrigenFormato;
     String precisionDestinoFormato;
     String precisionLiquidezFormato;
+    String precisionPrecioFormato;
     String usando;
-    RealmList<DBOpInversiones> operaciones;
-    int modo;
+    String referencia;
     Boolean botonPorcentajesAplanado;
     Boolean enForex;
+    RealmList<DBOpInversiones> operaciones;
+    int modo;
+
+    public String getReferencia() {
+        return referencia;
+    }
+
+    public void setReferencia(String referencia) {
+        this.referencia = referencia;
+    }
+
+
+    public String getPrecisionPrecio() {
+        return precisionPrecio;
+    }
+
+    public void setPrecisionPrecio(String precisionPrecio) {
+        this.precisionPrecio = precisionPrecio;
+    }
+
+    public String getPrecisionPrecioFormato() {
+        return precisionPrecioFormato;
+    }
+
+    public void setPrecisionPrecioFormato(String precisionPrecioFormato) {
+        this.precisionPrecioFormato = precisionPrecioFormato;
+    }
+
 
     public Boolean getEnForex() {
         return enForex;
